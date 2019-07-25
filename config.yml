@@ -1,0 +1,33 @@
+profiles:
+
+  - name: tbt-snowflake
+    type: snowflake
+    account: theblacktux
+    user: cherther
+    password: W@rehous3
+    role: SYSADMIN
+    database: fivetran
+    schema: tbt_public
+    warehouse: dbt
+
+    tables:
+      - app_event
+      - app_order
+      - app_user
+
+  - name: omaze-snowflake
+    type: snowflake
+    account: re80354.us-east-1
+    user: cherther
+    password: W@rehous3
+    role: SYSADMIN
+    database: fivetran
+    schema: shopify
+    warehouse: dbt
+
+    tables:
+      - customer
+      - product
+      - order_line_refund
+      - order_discount_code
+      - order_line
