@@ -1,0 +1,11 @@
+version: 2
+
+models:
+    - name: {{ table }}
+      columns:
+    {%- for column in columns %}
+        - name: {{ column["name"] }}
+          description: 
+          tests:
+            - not_null
+    {%- endfor -%}
