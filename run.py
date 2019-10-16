@@ -2,25 +2,38 @@ import plac
 import helper
 from logger import logger
 from connection import SnowflakeConnection
+from sqlalchemy.inspection import inspect
 
-def main(config_file: ("Config file", 'option', 'c')='config.yml'):
+def main(project_file: ("Project file", "option", "p") = "projects.yml",
+         connections_file: ("Connections file", "option", "c") = "connections.yml"):
 
-    config = helper.read_yaml(config_file)
+    projects = helper.read_yaml(project_file)["projects"]
 
-    for profile in config["profiles"]:
-        
-        profile_name = profile["name"]
-        tables = profile["tables"]
-        logger.info(profile_name)
+    connections = helper.read_yaml(connections_file)
 
-        snow = SnowflakeConnection(profile)
-        
-        with snow.engine.connect() as con:
-            
-            for table in tables:
-                con.execute(f"select count(*) from {table}")
-            
+    for project in projects:
 
+        connection_name = project["connection"]
+        logger.info(connection_name)
+
+        connection_info = connections[connection_name]
+        connection_types = {"snowflake": SnowflakeConnection}
+        connection_type = connection_info["type"]
+
+        schemas = project["schema"]
+
+        conn = connection_types[connection_type](connection_info)
+
+        with conn.connect() as cur:
+            inspector = inspect(conn.engine)
+
+            for schema in schemas:
+                tables = inspector.get_table_names(schema)
+                for table in tables:
+                    logger.info(table)
+                    # columns = inspector.get_columns(table, schema)
+                    # logger.info(columns)
+                    
 if __name__ == '__main__':
 
     plac.call(main)

@@ -1,0 +1,26 @@
+tbt-snowflake:
+  type: snowflake
+  account: theblacktux
+  user: tbtadmin
+  password: W@rehous3
+  role: SYSADMIN
+  database: dw
+  schema: da_dim
+  warehouse: analysis
+
+omaze-snowflake:
+  type: snowflake
+  account: re80354.us-east-1
+  user: cherther
+  password: W@rehous3
+  role: SYSADMIN
+  database: DW
+  schema: shop
+  warehouse: analysis
+
+omaze-mysql:
+  type: mysql
+  host: prod-aurora-rdscluster-1jnxo1ddi0hd3.cluster-clqok9lna3by.us-east-1.rds.amazonaws.com
+  user: read_user
+  password: Ku!s"Vk#.<4dbk$
+  schema: omaze_fulfillment

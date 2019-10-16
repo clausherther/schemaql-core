@@ -15,7 +15,7 @@ def make_logger():
     ch.setLevel(logging.INFO)
     ch.setFormatter(formatter)
 
-    fh = logging.FileHandler('schemaql.log')
+    fh = logging.FileHandler('logs/schemaql.log')
     fh.setLevel(logging.INFO)
     fh.setFormatter(formatter)
 

@@ -1,0 +1,12 @@
+projects:
+
+  - connection: tbt-snowflake
+    schema:
+      - da_dim
+      # - bi
+      # - rpt
+
+  # - connection: omaze-snowflake
+  #   schema:
+  #     - shop
+  #     - customer
