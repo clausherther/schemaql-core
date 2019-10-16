@@ -107,6 +107,12 @@ class SnowflakeConnection(Connection):
         self._account = val
 
     @property
+    def engine(self):
+        if self._engine is None:
+            self._engine = self._get_connection(connect=False)
+        return self._engine
+
+    @property
     def role(self):
         return self._role
 
@@ -143,5 +149,4 @@ class SnowflakeConnection(Connection):
 
     def connect(self):
 
-        self._engine = self._get_connection()
-        return self._engine.connect()
+        return self.engine.connect()

@@ -24,15 +24,18 @@ def main(project_file: ("Project file", "option", "p") = "projects.yml",
 
         conn = connection_types[connection_type](connection_info)
 
-        with conn.connect() as cur:
-            inspector = inspect(conn.engine)
+        list_tables(conn, schemas)
 
-            for schema in schemas:
-                tables = inspector.get_table_names(schema)
-                for table in tables:
-                    logger.info(table)
-                    # columns = inspector.get_columns(table, schema)
-                    # logger.info(columns)
+def list_tables(conn, schemas):
+
+    inspector = inspect(conn.engine)
+
+    for schema in schemas:
+        tables = inspector.get_table_names(schema)
+        for table in tables:
+            logger.info(table)
+            # columns = inspector.get_columns(table, schema)
+            # logger.info(columns)
                     
 if __name__ == '__main__':
 
