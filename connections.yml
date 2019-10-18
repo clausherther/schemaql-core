@@ -12,7 +12,7 @@ omaze-snowflake:
   type: snowflake
   account: re80354.us-east-1
   user: cherther
-  password: W@rehous3
+  password: Sn0wflake
   role: SYSADMIN
   database: DW
   schema: shop

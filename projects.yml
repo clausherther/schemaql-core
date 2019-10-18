@@ -1,10 +1,15 @@
 projects:
-
-  - connection: tbt-snowflake
+  theblacktux:
+    connection: tbt-snowflake
     schema:
       - da_dim
-      # - bi
-      # - rpt
+  omaze:
+    connection: omaze-snowflake
+    schema:
+      - customer
+      - shop
+      - marketing
+      - web
 
   # - connection: omaze-snowflake
   #   schema:
