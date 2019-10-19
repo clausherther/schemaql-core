@@ -2,10 +2,16 @@ projects:
   theblacktux:
     connection: tbt-snowflake
     schema:
-      - da_dim
+      dw:
+      tpch:
+      - WH
+      - ODS
   omaze:
     connection: omaze-snowflake
     schema:
+      # fivetran:
+      # - shopify
+      dw:
       - customer
       - shop
       - marketing

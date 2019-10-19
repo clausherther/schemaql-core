@@ -30,11 +30,9 @@ class Connection(object):
 
     @property
     def engine(self):
+        if self._engine is None:
+            self.create_engine(connect=False)
         return self._engine
-
-    @engine.setter
-    def engine(self, val):
-        self._engine = val
 
     @property
     def database(self):
@@ -68,22 +66,21 @@ class Connection(object):
     def password(self, val):
         self._password = val
 
-    def _get_connection(self, connect=False):
+    def create_engine(self, connect=False):
 
         driver = "mysql+pymysql"
         connect_url = f"{self._driver}://{self._user_name}:{self._password}@{self._host}"
 
-        engine = create_engine(connect_url)
+        self._engine = create_engine(connect_url)
 
         if connect:
-            return engine.connect()
+            return self._engine.connect()
         else:
-            return engine
+            return self._engine
 
     def connect(self):
+        return self.self._engine.connect()
 
-        self._engine = self._get_connection()
-        return self._engine.connect()
 
 class SnowflakeConnection(Connection):
     """
@@ -109,7 +106,7 @@ class SnowflakeConnection(Connection):
     @property
     def engine(self):
         if self._engine is None:
-            self._engine = self._get_connection(connect=False)
+            self.create_engine(connect=False)
         return self._engine
 
     @property
@@ -128,9 +125,9 @@ class SnowflakeConnection(Connection):
     def warehouse(self, val):
         self._warehouse = val
 
-    def _get_connection(self, connect=False):
+    def create_engine(self, connect=False):
 
-        engine = create_engine(
+        self._engine = create_engine(
             URL(
                 account=self._account,
                 user=self._user_name,
@@ -143,10 +140,10 @@ class SnowflakeConnection(Connection):
         )
 
         if connect:
-            return engine.connect()
+            return self._engine.connect()
         else:
-            return engine
+            return self._engine
 
     def connect(self):
 
-        return self.engine.connect()
+        return self._engine.connect()
