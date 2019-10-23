@@ -1,9 +1,8 @@
 import sqlalchemy
 from sqlalchemy import create_engine
 
-from snowflake.sqlalchemy import URL
+# from snowflake.sqlalchemy import URL
 # import snowflake.connector
-
 
 class Connection(object):
     """
@@ -13,20 +12,14 @@ class Connection(object):
     def __init__(self, connection_info):
 
         self._connection_type = connection_info["type"]
+        self._url = connection_info["url"]
         self._database = connection_info["database"]
         self._schema = connection_info["schema"]
-        self._user_name = connection_info["user"]
-        self._password = connection_info["password"]
+        # self._user_name = connection_info["user"]
+        # self._password = connection_info["password"]
 
+        self._connect_url = self._make_url()
         self._engine = None
-
-    @property
-    def connection_type(self):
-        return self._connection_type
-
-    @connection_type.setter
-    def connection_type(self, val):
-        self._connection_type = val
 
     @property
     def engine(self):
@@ -51,93 +44,20 @@ class Connection(object):
         self._schema = val
 
     @property
-    def user_name(self):
-        return self._user_name
+    def connect_url(self):
+        self._connect_url = self._make_url()
+        return self._connect_url
 
-    @user_name.setter
-    def user_name(self, val):
-        self._user_name = val
+    # @schema.setter
+    # def connect_url(self, val):
+    #     self._connect_url = val
 
-    @property
-    def password(self):
-        return self._password
-
-    @password.setter
-    def password(self, val):
-        self._password = val
+    def _make_url(self):
+        return f"{self._url}/{self.database}/{self.schema}"
 
     def create_engine(self, connect=False):
 
-        driver = "mysql+pymysql"
-        connect_url = f"{self._driver}://{self._user_name}:{self._password}@{self._host}"
-
-        self._engine = create_engine(connect_url)
-
-        if connect:
-            return self._engine.connect()
-        else:
-            return self._engine
-
-    def connect(self):
-        return self.self._engine.connect()
-
-
-class SnowflakeConnection(Connection):
-    """
-    Snowflake Database Connection
-    """
-
-    def __init__(self, connection_info):
-
-        super().__init__(connection_info)
-
-        self._account = connection_info["account"]
-        self._role = connection_info["role"]
-        self._warehouse = connection_info["warehouse"]
-
-    @property
-    def account(self):
-        return self._account
-
-    @account.setter
-    def account(self, val):
-        self._account = val
-
-    @property
-    def engine(self):
-        if self._engine is None:
-            self.create_engine(connect=False)
-        return self._engine
-
-    @property
-    def role(self):
-        return self._role
-
-    @role.setter
-    def role(self, val):
-        self._role = val
-
-    @property
-    def warehouse(self):
-        return self._warehouse
-
-    @warehouse.setter
-    def warehouse(self, val):
-        self._warehouse = val
-
-    def create_engine(self, connect=False):
-
-        self._engine = create_engine(
-            URL(
-                account=self._account,
-                user=self._user_name,
-                password=self._password,
-                role=self._role,
-                warehouse=self._warehouse,
-                database=self._database,
-                schema=self._schema,
-            )
-        )
+        self._engine = create_engine(self.connect_url)
 
         if connect:
             return self._engine.connect()

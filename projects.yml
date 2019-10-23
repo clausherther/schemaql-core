@@ -1,22 +1,27 @@
 projects:
-  theblacktux:
-    connection: tbt-snowflake
+  tpch:
+    connection: tpch-snowflake
     schema:
-      dw:
-      tpch:
-      - WH
+      TPCH:
       - ODS
+      - WH
   omaze:
     connection: omaze-snowflake
     schema:
       # fivetran:
       # - shopify
-      dw:
+      DW:
       - customer
       - shop
       - marketing
       - web
-
+  omaze-test:
+    connection: omaze-snowflake
+    schema:
+      # fivetran:
+      # - shopify
+      DW:
+      - shop
   # - connection: omaze-snowflake
   #   schema:
   #     - shop
