@@ -8,17 +8,6 @@ from schemaql.connection import Connection
 from schemaql.logger import logger, Fore, Back, Style
 
 
-def get_test_sql(test_name, database, schema, table, column, kwargs=None):
-    template_path = schemaql_path.joinpath("templates", "tests").resolve()
-    loader = FileSystemLoader(str(template_path))
-    env = Environment(loader=loader)
-    template = env.get_template(f"{test_name}.sql")
-    sql = template.render(
-        database=database, schema=schema, table=table, column=column, kwargs=kwargs
-    )
-    return sql
-
-
 def log_test_result(schema_name, table_name, column_name, test_name, test_result):
 
     LINE_WIDTH = 88
@@ -64,6 +53,17 @@ def update_test_results(
     return test_results
 
 
+def get_test_sql(test_name, database, schema, table, column, kwargs=None):
+    template_path = schemaql_path.joinpath("templates", "tests").resolve()
+    loader = FileSystemLoader(str(template_path))
+    env = Environment(loader=loader)
+    template = env.get_template(f"{test_name}.sql")
+    sql = template.render(
+        database=database, schema=schema, table=table, column=column, kwargs=kwargs
+    )
+    return sql
+
+
 def test_schema(conn, databases, project_name):
 
     test_results = {}
@@ -105,9 +105,8 @@ def test_schema(conn, databases, project_name):
                             for test in column["tests"]:
 
                                 if type(test) is dict:
-                                    test_keys = list(test)
-                                    test_name = test_keys[0]
-                                    kwargs = {k: test[k] for k in test_keys[1:]}
+                                    test_name = list(test)[0]
+                                    kwargs = test[test_name]
                                 else:
                                     test_name = test
 
@@ -119,7 +118,7 @@ def test_schema(conn, databases, project_name):
                                     column_name,
                                     kwargs,
                                 )
-                                # logger.info(sql)
+
                                 rs = cur.execute(sql)
                                 result = rs.fetchone()
                                 test_result = result["test_result"]
