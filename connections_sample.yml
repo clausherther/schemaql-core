@@ -1,0 +1,12 @@
+project-1-snowflake:
+  type: snowflake
+  database: DB
+  schema: MY_SCHEMA
+  url: "snowflake://<user>:<password>@<account.region>"
+
+
+project-2-snowflake:
+  type: snowflake
+  database: DW
+  schema: shop
+  url: "snowflake://<user>:<password>@<account.region>"

@@ -1,0 +1,15 @@
+projects:
+  project-1:
+    connection: project-1-snowflake
+    schema:
+      TPCH:
+      - ODS
+      - WH
+  project-2:
+    connection: project-2-snowflake
+    schema:
+      DW:
+      - customer
+      - shop
+      - marketing
+      - web
