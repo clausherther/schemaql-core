@@ -1,0 +1,1 @@
+name = "schemaql-core"

@@ -1,8 +1,13 @@
 import logging
-from colorama import init
-from colorama import Fore, Back, Style
+from logging.handlers import SMTPHandler, TimedRotatingFileHandler
+from pathlib import Path
+from colorama import Back, Fore, Style, init
+
+from schemaql.helper import check_directory_exists
+
 init(autoreset=True)
 
+DEFAULT_LOG_PATH = Path("logs")
 
 def make_logger():
     """
@@ -19,7 +24,9 @@ def make_logger():
     ch.setLevel(logging.INFO)
     ch.setFormatter(formatter)
 
-    fh = logging.FileHandler('logs/schemaql.log')
+    check_directory_exists(DEFAULT_LOG_PATH)
+    log_path = DEFAULT_LOG_PATH.joinpath("schemaql.log")
+    fh = TimedRotatingFileHandler(filename=log_path, when="d", interval=1, backupCount=7)
     fh.setLevel(logging.INFO)
     fh.setFormatter(formatter)
 
@@ -27,8 +34,11 @@ def make_logger():
     _logger.addHandler(fh)
     _logger.setLevel(logging.INFO)
 
+    _sql_logger = logging.getLogger("sqlalchemy.engine")
+    _sql_logger.setLevel(logging.INFO)
+    _sql_logger.addHandler(fh)
+
     return _logger
 
 
-logging.getLogger("sqlalchemy.engine").setLevel(logging.ERROR)
 logger = make_logger()

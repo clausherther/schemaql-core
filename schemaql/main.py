@@ -1,24 +1,17 @@
-import os
 from pathlib import Path
 import json
 import plac
 from jinja2 import Template, FileSystemLoader, Environment
 from sqlalchemy.inspection import inspect
 
-import helper
-from connection import Connection
-from logger import logger, Fore, Back, Style
+from schemaql.helper import check_directory_exists, read_yaml, schemaql_path
+from schemaql.connection import Connection
+from schemaql.logger import logger, Fore, Back, Style
 
-
-def check_directory_exists(directory):
-    try:
-        os.makedirs(directory)
-    except FileExistsError:
-        # directory already exists
-        pass
 
 def make_schema_yaml(schema, table, columns):
-    loader = FileSystemLoader("templates/yaml")
+    template_path = schemaql_path.joinpath("templates", "yaml").resolve()
+    loader = FileSystemLoader(str(template_path))
     env = Environment(loader=loader)
     template = env.get_template("schema.yml")
     yml = template.render(schema=schema, table=table, columns=columns)
@@ -26,10 +19,13 @@ def make_schema_yaml(schema, table, columns):
 
 
 def get_test_sql(test_name, database, schema, table, column, kwargs=None):
-    loader = FileSystemLoader("templates/tests")
+    template_path = schemaql_path.joinpath("templates", "tests").resolve()
+    loader = FileSystemLoader(str(template_path))
     env = Environment(loader=loader)
     template = env.get_template(f"{test_name}.sql")
-    sql = template.render(database=database, schema=schema, table=table, column=column, kwargs=kwargs)
+    sql = template.render(
+        database=database, schema=schema, table=table, column=column, kwargs=kwargs
+    )
     return sql
 
 
@@ -58,7 +54,9 @@ def generate_table_schema(conn, databases, project_name):
 
             for table in tables:
                 columns = inspector.get_columns(table, schema)
-                logger.info(f"Generating schema for {database}.{schema}.{table} ({len(columns)})")
+                logger.info(
+                    f"Generating schema for {database}.{schema}.{table} ({len(columns)})"
+                )
                 yml = make_schema_yaml(schema, table, columns)
 
                 schema_directory = f"output/{project_name}/{database}/{schema}"
@@ -66,6 +64,7 @@ def generate_table_schema(conn, databases, project_name):
 
                 with open(f"{schema_directory}/{table}.yml", "w") as f:
                     f.write(yml)
+
 
 def log_test_result(schema_name, table_name, column_name, test_name, test_result):
 
@@ -84,19 +83,30 @@ def log_test_result(schema_name, table_name, column_name, test_name, test_result
         colored_fail = Fore.RED + f"FAIL {test_result:,}" + Style.RESET_ALL
         logger.error(result_msg + f"[{colored_fail}]".rjust(RESULT_WIDTH, "."))
 
-def update_test_results(project_name, schema_name, table_name, column_name, test_name, test_results, test_result):
+
+def update_test_results(
+    project_name,
+    schema_name,
+    table_name,
+    column_name,
+    test_name,
+    test_results,
+    test_result,
+):
 
     if test_result > 0:
         if schema_name not in test_results[project_name]:
             test_results[project_name][schema_name] = {}
 
-        if (table_name not in test_results[project_name][schema_name]):
+        if table_name not in test_results[project_name][schema_name]:
             test_results[project_name][schema_name][table_name] = {}
 
-        if (column_name not in test_results[project_name][schema_name][table_name]):
+        if column_name not in test_results[project_name][schema_name][table_name]:
             test_results[project_name][schema_name][table_name][column_name] = {}
 
-        test_results[project_name][schema_name][table_name][column_name] = {test_name: test_result}
+        test_results[project_name][schema_name][table_name][column_name] = {
+            test_name: test_result
+        }
 
     return test_results
 
@@ -130,7 +140,7 @@ def test_schema(conn, databases, project_name):
 
                 for p in schema_files:
 
-                    table_schema = helper.read_yaml(p.resolve())
+                    table_schema = read_yaml(p.resolve())
 
                     for table in table_schema["models"]:
 
@@ -155,22 +165,30 @@ def test_schema(conn, databases, project_name):
                                     schema_name,
                                     table_name,
                                     column_name,
-                                    kwargs
+                                    kwargs,
                                 )
                                 # logger.info(sql)
                                 rs = cur.execute(sql)
                                 result = rs.fetchone()
                                 test_result = result["test_result"]
 
-                                log_test_result(schema_name, table_name, column_name, test_name, test_result)
+                                log_test_result(
+                                    schema_name,
+                                    table_name,
+                                    column_name,
+                                    test_name,
+                                    test_result,
+                                )
 
-                                test_results = update_test_results(project_name,
-                                                                   schema_name,
-                                                                   table_name,
-                                                                   column_name,
-                                                                   test_name,
-                                                                   test_results,
-                                                                   test_result)
+                                test_results = update_test_results(
+                                    project_name,
+                                    schema_name,
+                                    table_name,
+                                    column_name,
+                                    test_name,
+                                    test_results,
+                                    test_result,
+                                )
 
     return test_results
 
@@ -182,8 +200,8 @@ def main(
     connections_file_prm: ("Connections file", "option", "c") = "connections.yml",
 ):
 
-    projects = helper.read_yaml(project_file_prm)["projects"]
-    connections = helper.read_yaml(connections_file_prm)
+    projects = read_yaml(project_file_prm)["projects"]
+    connections = read_yaml(connections_file_prm)
 
     for project_name in projects:
         if len(project_prm) > 0 and project_prm != project_name:
@@ -211,8 +229,3 @@ def main(
             check_directory_exists(output_directory)
             with open(f"{output_directory}/test_results.json", "w") as f:
                 f.write(test_results_json)
-
-
-if __name__ == "__main__":
-
-    plac.call(main)

@@ -1,0 +1,7 @@
+#!/usr/bin/env python
+import plac
+import schemaql.main
+
+if __name__ == "__main__":
+
+    plac.call(schemaql.main.main)
