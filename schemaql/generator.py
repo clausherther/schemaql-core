@@ -19,22 +19,25 @@ def make_schema_yaml(schema, table, columns):
 def generate_table_schema(conn, databases, project_name):
 
     for database in databases:
-
+        logger.info(f"database=={database}")
         conn.database = database
         conn.create_engine()
+        logger.info(conn.engine)
 
         inspector = inspect(conn.engine)
         schemas = databases[database]
+        logger.info(f"schemas=={schemas}")
 
         if schemas is None:
             logger.info("No schemas specified, getting all schemas from database...")
             schemas = sorted(inspector.get_schema_names())
 
         for schema in schemas:
-
-            inspector = inspect(conn.engine)
+            logger.info(f"schema=={schema}")
+            # inspector = inspect(conn.engine)
             tables = sorted(inspector.get_table_names(f"{schema}"))
-
+            tables = [table.replace(f"{schema}.", "") for table in tables if schema in table]
+            logger.info(tables)
             for table in tables:
                 columns = inspector.get_columns(table, schema)
                 logger.info(

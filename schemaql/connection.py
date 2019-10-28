@@ -13,8 +13,9 @@ class Connection(object):
 
         self._connection_type = connection_info["type"]
         self._url = connection_info["url"]
-        self._database = connection_info["database"]
-        self._schema = connection_info["schema"]
+        self._database = connection_info["database"] if "database" in connection_info else None
+        self._schema = connection_info["schema"] if "schema" in connection_info else None
+        self._credentials_path = connection_info["credentials_path"] if "credentials_path" in connection_info else None
         # self._user_name = connection_info["user"]
         # self._password = connection_info["password"]
 
@@ -53,11 +54,21 @@ class Connection(object):
     #     self._connect_url = val
 
     def _make_url(self):
-        return f"{self._url}/{self.database}/{self.schema}"
 
+        url = f"{self._url}"
+        if self.database:
+            url += f"{self.database}"
+        if self.schema:
+            url += f"/{self.schema}"
+
+        return url
+        
     def create_engine(self, connect=False):
 
-        self._engine = create_engine(self.connect_url)
+        if self._connection_type == "bigquery" and self._credentials_path:
+            self._engine = create_engine(self.connect_url, credentials_path=self._credentials_path)
+        else:
+            self._engine = create_engine(self.connect_url)
 
         if connect:
             return self._engine.connect()

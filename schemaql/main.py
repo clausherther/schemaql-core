@@ -12,7 +12,7 @@ from schemaql.logger import logger, Fore, Back, Style
 
 
 def main(
-    action_prm: ("Action ('test', or 'generate')", "option", "a") = "test",
+    action_prm: ("Action ('test', or 'generate')", "option", "a") = "generate",
     project_prm: ("Project", "option", "p") = "",
     project_file_prm: ("Project file", "option", "f") = "projects.yml",
     connections_file_prm: ("Connections file", "option", "c") = "connections.yml",
@@ -29,7 +29,6 @@ def main(
         connection_name = project["connection"]
 
         connection_info = connections[connection_name]
-        connection_type = connection_info["type"]
 
         databases = project["schema"]
         conn = Connection(connection_info)
@@ -39,3 +38,7 @@ def main(
         elif action_prm == "test":
             test_results = tester.test_schema(conn, databases, project_name)
             tester.save_test_results(project_name, test_results)
+
+if __name__ == "__main__":
+
+    plac.call(main)

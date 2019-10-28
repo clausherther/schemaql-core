@@ -1,7 +1,8 @@
-colorama==0.3.9
-Jinja2==2.10.1
-plac==1.0.0
-PyYAML==5.1
-snowflake-sqlalchemy==1.1.14
-SQLAlchemy==1.3.7
-sqlalchemy-redshift==0.7.5
+cffi==1.13.0
+colorama>=0.3.9
+Jinja2>=2.10.3
+plac>=1.0.0
+PyYAML>=5.1
+snowflake-sqlalchemy>=1.1.14
+SQLAlchemy>=1.3.7
+sqlalchemy-redshift>=0.7.5
