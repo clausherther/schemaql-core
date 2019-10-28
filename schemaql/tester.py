@@ -4,7 +4,6 @@ from jinja2 import Template, FileSystemLoader, Environment
 from sqlalchemy.inspection import inspect
 
 from schemaql.helper import check_directory_exists, read_yaml, schemaql_path
-from schemaql.connection import Connection
 from schemaql.logger import logger, Fore, Back, Style
 
 
@@ -72,7 +71,7 @@ def test_schema(conn, databases, project_name):
     for database in databases:
 
         conn.database = database
-        conn.create_engine()
+        conn.make_engine()
 
         inspector = inspect(conn.engine)
 

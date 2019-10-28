@@ -7,7 +7,8 @@ from sqlalchemy.inspection import inspect
 import schemaql.generator as generator
 import schemaql.tester as tester
 from schemaql.helper import check_directory_exists, read_yaml, schemaql_path
-from schemaql.connection import Connection
+from schemaql.connections.base_connection import Connection
+from schemaql.connections.bigquery import BigQueryConnection
 from schemaql.logger import logger, Fore, Back, Style
 
 
@@ -31,7 +32,13 @@ def main(
         connection_info = connections[connection_name]
 
         databases = project["schema"]
-        conn = Connection(connection_info)
+
+        assert "type" in connection_info, "'type' needs to be specified in connetions.yml"
+        connection_type = connection_info["type"]
+        supported_connections = {"snowflake": Connection, "bigquery": BigQueryConnection}
+        
+        assert connection_type in supported_connections, f"'{connection_type}' is currently not supported"
+        conn = supported_connections[connection_type](connection_info)
 
         if action_prm == "generate":
             generator.generate_table_schema(conn, databases, project_name)
