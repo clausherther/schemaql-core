@@ -69,10 +69,10 @@ def test_schema(conn, databases, project_name):
     test_results[project_name] = {}
 
     for database in databases:
-
         conn.database = database
         conn.make_engine()
 
+        logger.info(f"Inspecting database {database}...")
         inspector = inspect(conn.engine)
 
         schemas = databases[database]
@@ -141,11 +141,3 @@ def test_schema(conn, databases, project_name):
                                 )
 
     return test_results
-
-def save_test_results(project_name, test_results):
-    test_results_json = json.dumps(test_results, indent=4, sort_keys=True)
-
-    output_directory = Path("output").joinpath(project_name)
-    check_directory_exists(output_directory)
-    json_output_file = output_directory.joinpath("test_results.json")
-    json_output_file.write_text(test_results_json)

@@ -1,3 +1,7 @@
+collector:
+    type: json
+      output: output 
+
 projects:
   project-1:
     connection: project-1-snowflake

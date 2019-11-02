@@ -1,7 +1,7 @@
 version: 2
 
 models:
-    - name: {{ schema }}.{{ table }}
+    - name: {{ table }}
       columns:
     {%- for column in columns %}
         - name: {{ column["name"] }}

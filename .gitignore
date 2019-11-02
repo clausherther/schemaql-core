@@ -106,3 +106,5 @@ output
 
 connections.yml
 projects.yml
+
+logs/

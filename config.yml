@@ -1,0 +1,36 @@
+logs:
+  output: logs
+
+collector:
+  type: json
+  output: output 
+
+
+projects:
+  calogica:
+    connection: calogica-bq
+    schema:
+      dw-dev:
+      - dw
+
+  tpch:
+    connection: tpch-snowflake
+    schema:
+      TPCH:
+      - ODS
+      - WH
+
+  omaze:
+    connection: omaze-snowflake
+    schema:
+      DW:
+      - customer
+      - shop
+      - marketing
+      - web
+  
+  omaze-test:
+    connection: omaze-snowflake
+    schema:
+      DW:
+      - shop
