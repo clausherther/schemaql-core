@@ -32,7 +32,8 @@ class Connection(object):
     @property
     def engine(self):
         if self._engine is None:
-            self._make_engine(connect=False)
+            self._engine = self._make_engine()
+        logger.info(self._engine)
         return self._engine
 
     @property
@@ -78,10 +79,6 @@ class Connection(object):
         self._connect_url = self._make_url()
         return self._connect_url
 
-    # @schema.setter
-    # def connect_url(self, val):
-    #     self._connect_url = val
-
     def _make_url(self):
 
         url = f"{self._url}"
@@ -92,19 +89,13 @@ class Connection(object):
 
         return url
 
-    def _make_engine(self, connect=False):
+    def _make_engine(self):
 
-        self._engine = create_engine(self.connect_url)
-        logger.info(self.engine)
-
-        if connect:
-            return self._engine.connect()
-        else:
-            return self._engine
+        return create_engine(self.connect_url)
 
     def connect(self):
 
-        return self._engine.connect()
+        return self.engine.connect()
 
     def get_schema_names(self, database):
 

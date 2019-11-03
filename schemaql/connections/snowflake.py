@@ -14,8 +14,8 @@ class SnowflakeConnection(Connection):
 
     def __init__(self, connection_info):
 
-        super().__init__(connection_info)
         self._account = connection_info["account"]
+        super().__init__(connection_info)
 
     @property
     def account(self):
@@ -24,11 +24,6 @@ class SnowflakeConnection(Connection):
     @account.setter
     def account(self, val):
         self._account = val
-
-    @property
-    def connect_url(self):
-        self._connect_url = self._make_url()
-        return self._connect_url
 
     def _make_url(self):
 

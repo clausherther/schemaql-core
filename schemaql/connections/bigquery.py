@@ -11,8 +11,8 @@ class BigQueryConnection(Connection):
 
     def __init__(self, connection_info):
 
-        super().__init__(connection_info)
         self._credentials_path = connection_info["credentials_path"]
+        super().__init__(connection_info)
 
     def _make_engine(self, connect=False):
 
