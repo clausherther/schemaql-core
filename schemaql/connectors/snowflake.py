@@ -4,10 +4,10 @@ from sqlalchemy import create_engine
 # from snowflake.sqlalchemy import URL
 # import snowflake.connector
 
-from schemaql.connections.base_connection import Connection
+from schemaql.connectors.base_connector import Connector
 
 
-class SnowflakeConnection(Connection):
+class SnowflakeConnector(Connector):
     """
      Snowflake Connection
     """

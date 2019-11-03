@@ -5,7 +5,7 @@ from sqlalchemy.inspection import inspect
 from schemaql.logger import logger
 
 
-class Connection(object):
+class Connector(object):
     """
     Database Connection
     """

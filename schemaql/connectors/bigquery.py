@@ -1,12 +1,12 @@
 import sqlalchemy
 from sqlalchemy import create_engine
 
-from schemaql.connections.base_connection import Connection
+from schemaql.connectors.base_connector import Connector
 
 
-class BigQueryConnection(Connection):
+class BigQueryConnector(Connector):
     """
-    BigQuery Connection
+    BigQuery Connector
     """
 
     def __init__(self, connection_info):

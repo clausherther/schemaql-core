@@ -8,9 +8,9 @@ from schemaql.project import Project
 from schemaql.collector import JsonCollector
 
 from schemaql.helper import check_directory_exists, read_yaml, schemaql_path
-from schemaql.connections.base_connection import Connection
-from schemaql.connections.bigquery import BigQueryConnection
-from schemaql.connections.snowflake import SnowflakeConnection
+from schemaql.connectors.base_connector import Connector
+from schemaql.connectors.bigquery import BigQueryConnector
+from schemaql.connectors.snowflake import SnowflakeConnector
 from schemaql.logger import logger, Fore, Back, Style
 
 
@@ -28,9 +28,9 @@ def main(
 ):
 
     supported_collectors = {"json": JsonCollector}
-    supported_connections = {
-        "snowflake": SnowflakeConnection,
-        "bigquery": BigQueryConnection,
+    supported_connectors = {
+        "snowflake": SnowflakeConnector,
+        "bigquery": BigQueryConnector,
     }
 
     config = read_yaml(config_file)
@@ -63,9 +63,9 @@ def main(
         connection_type = connection_info["type"]
 
         assert (
-            connection_type in supported_connections
+            connection_type in supported_connectors
         ), f"'{connection_type}' is currently not supported"
-        connector = supported_connections[connection_type](connection_info)
+        connector = supported_connectors[connection_type](connection_info)
 
         project = Project(project_name, connector, databases)
 

@@ -1,7 +1,7 @@
 import pytest
 from schemaql.helper import read_yaml
-from schemaql.connections.snowflake import SnowflakeConnection
-from schemaql.connections.bigquery import BigQueryConnection
+from schemaql.connectors.snowflake import SnowflakeConnector
+from schemaql.connectors.bigquery import BigQueryConnector
 
 class TestConnections(object):
 
@@ -12,12 +12,12 @@ class TestConnections(object):
         connection_info = connections[connection_name]
         connection_type = connection_info["type"]
 
-        supported_connections = {
-            "snowflake": SnowflakeConnection,
-            "bigquery": BigQueryConnection,
+        supported_connectors = {
+            "snowflake": SnowflakeConnector,
+            "bigquery": BigQueryConnector,
         }
 
-        connector = supported_connections[connection_type](connection_info)
+        connector = supported_connectors[connection_type](connection_info)
 
         return connector 
 
