@@ -4,8 +4,7 @@ import plac
 from jinja2 import Template, FileSystemLoader, Environment
 from sqlalchemy.inspection import inspect
 
-from schemaql.generator import SchemaGenerator
-import schemaql.tester as tester
+from schemaql.project import Project
 from schemaql.collector import JsonCollector
 
 from schemaql.helper import check_directory_exists, read_yaml, schemaql_path
@@ -68,14 +67,15 @@ def main(
         ), f"'{connection_type}' is currently not supported"
         connector = supported_connections[connection_type](connection_info)
 
+        project = Project(project_name, connector, databases)
+
         if action == "generate":
 
-            generator = SchemaGenerator(project_name, connector, databases)
-            generator.generate_database_schema()
+            project.generate_database_schema() 
 
         elif action == "test":
 
-            test_results = tester.test_schema(connector, databases, project_name)
+            test_results = project.test_database_schema()
             collector.save_test_results(project_name, test_results)
 
 
