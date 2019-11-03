@@ -3,7 +3,7 @@
 with all_values as (
     select distinct
         {{ column }} as value_field
-    from {{ table }}
+    from {{ schema }}.{{ table }}
 ),
 validation_errors as (
 

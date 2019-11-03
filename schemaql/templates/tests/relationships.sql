@@ -1,10 +1,12 @@
+{% set other_table = kwargs["to"] %}
+{% if not '.' in other_table %}
+{% set other_table = schema ~ '.' ~ other_table  %}
+{% endif %}
+{% set other_column = kwargs["field"] %}
 select count(*) as test_result
 from
-    {# {{ database }}.{{ schema }}. #}
-    {{ table }} c
+    {{ schema }}.{{ table }} c
     left outer join
-    {# {{ database }}.{{ schema }}. #}
-    {{ kwargs["to"] }} p
-        on c.{{ column }} = p.{{ kwargs["field"] }}
+    {{ other_table }} p on c.{{ column }} = p.{{ other_column }}
 where
-    p.{{ kwargs["field"] }} is null
+    p.{{ other_column }} is null

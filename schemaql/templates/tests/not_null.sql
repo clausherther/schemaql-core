@@ -1,4 +1,4 @@
 select count(*) as test_result
-from {{ table }}
+from {{ schema }}.{{ table }}
 where
     {{ column }} is null
