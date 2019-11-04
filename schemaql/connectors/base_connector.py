@@ -1,5 +1,5 @@
 import sqlalchemy
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, exc
 from sqlalchemy.inspection import inspect
 
 from schemaql.logger import logger
@@ -7,7 +7,7 @@ from schemaql.logger import logger
 
 class Connector(object):
     """
-    Database Connection
+    Database Connector
     """
 
     def __init__(self, connection_info):
@@ -33,7 +33,7 @@ class Connector(object):
     def engine(self):
         if self._engine is None:
             self._engine = self._make_engine()
-        logger.info(self._engine)
+            logger.info(self._engine)
         return self._engine
 
     @property
@@ -114,3 +114,20 @@ class Connector(object):
         columns = self.inspector.get_columns(table, schema)
 
         return columns
+
+    def execute(self, sql):
+
+        with self.engine.connect() as cur:
+
+            try:
+                rs = cur.execute(sql)
+                return rs
+            except exc.DBAPIError:
+                # an exception is raised, Connection is invalidated.
+                if self.engine.connection_invalidated:
+                    logger.error("Connection was invalidated!")
+    
+    def execute_return_one(self, sql):
+        rs = self.execute(sql)
+        result = rs.fetchone()
+        return result
