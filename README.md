@@ -27,9 +27,7 @@ optional arguments:
                         Connections file
 ```
 
-## Usage
-
-### Configuration
+## Configuration
 
 SchemaQL needs to `*.yml` for configuration:
 
@@ -78,6 +76,8 @@ projects:
       - data_set_2
 ```
 
+## Usage
+
 ### Generate
 
 SchemaQL runs tests against schema information contained in `yml` files. You can either write these from scratch, use your existing `dbt` schema files, or use `schemaql` to generate them. 
@@ -102,3 +102,18 @@ Test `"my_project"` only:
 ```bash
 schemaql test -p"my_project"
 ```
+
+## Built-in Tests
+
+### Schema Tests
+#### not_null
+#### relationships
+#### unique
+
+### Data Tests
+#### accepted_values
+#### at_least_one
+#### equal_expression (TBD)
+#### frequency (TBD)
+#### recency (TBD)
+#### unique_rows
