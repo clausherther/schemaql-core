@@ -1,5 +1,5 @@
 import pytest
-from schemaql.helper import read_yaml
+from schemaql.helpers.fileio import read_yaml
 from schemaql.connectors.snowflake import SnowflakeConnector
 from schemaql.connectors.bigquery import BigQueryConnector
 

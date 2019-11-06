@@ -69,5 +69,9 @@ class JinjaConfig(object):
 
     @contextfunction
     def connector_macro(self, context, macro_name, *args, **kwargs):
+        default_macro_name = f"default__{macro_name}"
         connector_macro_name = f"{self._connector_type}__{macro_name}"
-        return context.vars[connector_macro_name](*args, **kwargs)
+        if connector_macro_name not in context.vars:
+            connector_macro_name = default_macro_name 
+
+        return context.vars[connector_macro_name] (*args, **kwargs)
