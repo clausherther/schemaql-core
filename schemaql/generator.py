@@ -1,13 +1,14 @@
 from pathlib import Path
 from jinja2 import Template, FileSystemLoader, Environment
 
-from schemaql.helper import check_directory_exists, read_yaml, schemaql_path
-from schemaql.logger import logger, Fore, Back, Style
+from schemaql.helpers.fileio import check_directory_exists, read_yaml, schemaql_path
+from schemaql.helpers.jinja import JinjaConfig
+from schemaql.helpers.logger import logger, Fore, Back, Style
 
 
 class TableSchemaGenerator(object):
     """
-    Schema Generator
+    Table Schema Generator class
     """
 
     def __init__(self, project_name, connector, database, schema, table):
@@ -18,10 +19,9 @@ class TableSchemaGenerator(object):
         self._schema = schema
         self._table = table
         self._columns = None
-        
-        self._template_path = schemaql_path.joinpath("templates", "yaml").resolve()
-        self._loader = FileSystemLoader(str(self._template_path))
-        self._env = Environment(loader=self._loader)
+
+        cfg = JinjaConfig("yaml", self._connector._connector_type)
+        self._env = cfg.get_jinja_template_env()        
 
     def _make_schema_yaml(self,):
         """Renders schema yaml template from metadata

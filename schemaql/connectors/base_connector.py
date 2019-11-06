@@ -2,7 +2,7 @@ import sqlalchemy
 from sqlalchemy import create_engine, exc
 from sqlalchemy.inspection import inspect
 
-from schemaql.logger import logger
+from schemaql.helpers.logger import logger
 
 
 class Connector(object):
@@ -12,7 +12,7 @@ class Connector(object):
 
     def __init__(self, connection_info):
 
-        self._connection_type = connection_info["type"]
+        self._connector_type = connection_info["type"]
         self._user = connection_info["user"] if "user" in connection_info else None
         self._password = (
             connection_info["password"] if "password" in connection_info else None
@@ -28,6 +28,12 @@ class Connector(object):
         self._connect_url = None
         self._engine = None
         self._inspector = None
+
+    
+
+    @property
+    def connector_type(self):
+        return self._connector_type
 
     @property
     def engine(self):
@@ -122,10 +128,9 @@ class Connector(object):
             try:
                 rs = cur.execute(sql)
                 return rs
-            except exc.DBAPIError:
+            except exc.DBAPIError as ex:
                 # an exception is raised, Connection is invalidated.
-                if self.engine.connection_invalidated:
-                    logger.error("Connection was invalidated!")
+                logger.error(f"Connection Error {ex}")
     
     def execute_return_one(self, sql):
         rs = self.execute(sql)

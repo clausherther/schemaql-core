@@ -2,8 +2,8 @@
 from pathlib import Path
 import json
 
-from schemaql.helper import check_directory_exists, read_yaml, schemaql_path
-from schemaql.logger import logger, Fore, Back, Style
+from schemaql.helpers.fileio import check_directory_exists, read_yaml, schemaql_path
+from schemaql.helpers.logger import logger, Fore, Back, Style
 
 class Collector(object):
     """

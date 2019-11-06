@@ -1,10 +1,10 @@
-from schemaql.logger import logger, Fore, Back, Style
+from schemaql.helpers.logger import logger, Fore, Back, Style
 from schemaql.generator import TableSchemaGenerator
 import schemaql.tester as tester
 
 class Project(object):
     """
-    Schema Generator
+    Project class
     """
 
     def __init__(self, project_name, connector, databases):

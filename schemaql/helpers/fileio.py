@@ -2,7 +2,7 @@ from pathlib import Path
 import yaml
 import inspect
 
-schemaql_path = Path(__file__).parent
+schemaql_path = Path(__file__).parent.parent
 
 def read_yaml(yaml_path, storage_model='local'):
 

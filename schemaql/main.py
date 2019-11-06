@@ -7,11 +7,11 @@ from sqlalchemy.inspection import inspect
 from schemaql.project import Project
 from schemaql.collector import JsonCollector
 
-from schemaql.helper import check_directory_exists, read_yaml, schemaql_path
+from schemaql.helpers.fileio import check_directory_exists, read_yaml, schemaql_path
 from schemaql.connectors.base_connector import Connector
 from schemaql.connectors.bigquery import BigQueryConnector
 from schemaql.connectors.snowflake import SnowflakeConnector
-from schemaql.logger import logger, Fore, Back, Style
+from schemaql.helpers.logger import logger, Fore, Back, Style
 
 
 @plac.annotations(

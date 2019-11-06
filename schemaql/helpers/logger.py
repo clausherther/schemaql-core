@@ -3,7 +3,7 @@ from logging.handlers import SMTPHandler, TimedRotatingFileHandler
 from pathlib import Path
 from colorama import Back, Fore, Style, init
 
-from schemaql.helper import check_directory_exists
+from schemaql.helpers.fileio import check_directory_exists
 
 init(autoreset=True)
 

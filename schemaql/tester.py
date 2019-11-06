@@ -1,43 +1,42 @@
 from pathlib import Path
 import json
-from jinja2 import Template, FileSystemLoader, Environment
 from sqlalchemy.inspection import inspect
 
-from schemaql.helper import check_directory_exists, read_yaml, schemaql_path
-from schemaql.logger import logger, Fore, Back, Style
-
-
+from schemaql.helpers.fileio import check_directory_exists, read_yaml, schemaql_path
+from schemaql.helpers.jinja import JinjaConfig
+from schemaql.helpers.logger import logger, Fore, Back, Style
 
 class TableTester(object):
     """
-    Schema Generator
+    TableTester class
     """
 
-    def __init__(self, project_name, connector, database_name, schema_name, table_name):
+    def __init__(self, connector, database_name, schema_name, table_name):
 
-        self._project_name = project_name
         self._connector = connector
         self._database_name = database_name
         self._schema_name = schema_name
         self._table_name = table_name
-        
-        self._template_path = schemaql_path.joinpath("templates", "tests").resolve()
-        self._loader = FileSystemLoader(str(self._template_path))
-        self._env = Environment(loader=self._loader)
 
-    def get_test_sql(self, test_name, column_name, kwargs=None):
+        cfg = JinjaConfig("tests", self._connector._connector_type)
+        self._env = cfg.get_jinja_template_env()
+        
+    def _get_test_sql(self, test_name, column_name, kwargs=None):
+
+        logger.info(test_name)
+
         template = self._env.get_template(f"{test_name}.sql")
+
         sql = template.render(
-            # database=self._database_name, 
-            schema=self._schema_name, 
-            table=self._table_name, 
-            column=column_name, 
-            kwargs=kwargs
+            schema=self._schema_name,
+            table=self._table_name,
+            column=column_name,
+            kwargs=kwargs,
         )
+        # logger.info(sql)
         return sql
 
-
-    def log_test_result(self, column_name, test_name, test_result):
+    def _log_test_result(self, column_name, test_name, test_result):
 
         LINE_WIDTH = 88
         RESULT_WIDTH = 30
@@ -54,37 +53,75 @@ class TableTester(object):
             colored_fail = Fore.RED + f"FAIL {test_result:,}" + Style.RESET_ALL
             logger.error(result_msg + f"[{colored_fail}]".rjust(RESULT_WIDTH, "."))
 
+    def _get_test_results(self, test_name, column_name, kwargs=None):
 
-    def update_test_results(
-        self,
-        column_name,
-        test_name,
-        test_results,
-        test_result,
-    ):
+        sql = self._get_test_sql(test_name, column_name, kwargs)
+        result = self._connector.execute_return_one(sql)
+        test_result = result["test_result"]
 
-        if test_result > 0:
-            if self._schema_name not in test_results[self._project_name]:
-                test_results[self._project_name][self._schema_name] = {}
+        return test_result
 
-            if self._table_name not in test_results[self._project_name][self._schema_name]:
-                test_results[self._project_name][self._schema_name][self._table_name] = {}
+    def run_table_tests(self, tests):
 
-            if column_name not in test_results[self._project_name][self._schema_name][self._table_name]:
-                test_results[self._project_name][self._schema_name][self._table_name][column_name] = {}
+        for test in tests:
 
-            test_results[self._project_name][self._schema_name][self._table_name][column_name] = {
-                test_name: test_result
-            }
+            if type(test) is dict:
+                test_name = list(test)[0]
+                kwargs = test[test_name]
+            else:
+                test_name = test
+
+            column_name = "table_test"
+            test_result = self._get_test_results(test_name, column_name, kwargs,)
+
+            self._log_test_result(
+                column_name, test_name, test_result,
+            )
+
+
+    def run_column_tests(self, column_schema):
+
+        test_results = {}
+
+        for column in column_schema:
+
+            column_name = column["name"]
+            kwargs = None
+
+            column_test_results = []
+
+            for test in column["tests"]:
+
+                if type(test) is dict:
+                    test_name = list(test)[0]
+                    kwargs = test[test_name]
+                else:
+                    test_name = test
+
+                test_result = self._get_test_results(test_name, column_name, kwargs,)
+
+                column_test_results.append({test_name: test_result})
+
+                self._log_test_result(
+                    column_name, test_name, test_result,
+                )
+
+            if len(column_test_results) > 0:
+                if self._table_name not in test_results:
+                    test_results[self._table_name] = {}
+
+                if column_name not in test_results[self._table_name]:
+                    test_results[self._table_name][column_name] = {}
+
+                test_results[self._table_name][column_name] = column_test_results
 
         return test_results
-
 
 
 def test_schema(connector, databases, project_name):
 
     test_results = {}
-    test_results[project_name] = {}
+    test_results[project_name] = []
 
     for database_name in databases:
         connector.database = database_name
@@ -99,53 +136,31 @@ def test_schema(connector, databases, project_name):
 
         for schema_name in schemas:
 
-            with connector.connect() as cur:
+            p = Path("output")
+            schema_path = Path(project_name).joinpath(
+                database_name, schema_name, "*.yml"
+            )
+            schema_files = sorted(list(p.glob(str(schema_path))))
 
-                p = Path("output")
-                schema_path = Path(project_name).joinpath(database_name, schema_name, "*.yml")
-                schema_files = sorted(list(p.glob(str(schema_path))))
+            for p in schema_files:
 
-                for p in schema_files:
+                table_schema = read_yaml(p.resolve())
 
-                    table_schema = read_yaml(p.resolve())
+                for table in table_schema["models"]:
 
-                    for table in table_schema["models"]:
+                    table_name = table["name"]
+                    table_tester = TableTester(
+                        connector, database_name, schema_name, table_name
+                    )
 
-                        table_name = table["name"]
-                        table_tester = TableTester(project_name, connector, database_name, schema_name, table_name)
-                        for column in table["columns"]:
+                    table_tests = table["tests"] if "tests" in table else None
+                    if table_tests:
+                        table_tester.run_table_tests(table_tests)
 
-                            column_name = column["name"]
-                            kwargs = None
-                            for test in column["tests"]:
+                    columns = table["columns"]
 
-                                if type(test) is dict:
-                                    test_name = list(test)[0]
-                                    kwargs = test[test_name]
-                                else:
-                                    test_name = test
-
-                                sql = table_tester.get_test_sql(
-                                    test_name,
-                                    column_name,
-                                    kwargs,
-                                )
-
-                                rs = cur.execute(sql)
-                                result = rs.fetchone()
-                                test_result = result["test_result"]
-
-                                table_tester.log_test_result(
-                                    column_name,
-                                    test_name,
-                                    test_result,
-                                )
-
-                                test_results = table_tester.update_test_results(
-                                    column_name,
-                                    test_name,
-                                    test_results,
-                                    test_result,
-                                )
+                    test_results[project_name].append(
+                        table_tester.run_column_tests(columns)
+                    )
 
     return test_results
