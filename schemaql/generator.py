@@ -21,7 +21,7 @@ class TableSchemaGenerator(object):
         self._columns = None
 
         cfg = JinjaConfig("yaml", self._connector._connector_type)
-        self._env = cfg.get_jinja_template_env()        
+        self._env = cfg.environment        
 
     def _make_schema_yaml(self,):
         """Renders schema yaml template from metadata

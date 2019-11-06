@@ -15,11 +15,9 @@ def make_logger():
     """
     _logger = logging.getLogger(__name__)
 
-    # message_format = '%(asctime)s %(name)-12s %(levelname)-8s %(message)s'
     message_format = "%(asctime)s | %(message)s"
     formatter = logging.Formatter(message_format, datefmt="%H:%M:%S")
-    # '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-
+ 
     ch = logging.StreamHandler()
     ch.setLevel(logging.INFO)
     ch.setFormatter(formatter)

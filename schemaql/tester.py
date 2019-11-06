@@ -19,11 +19,9 @@ class TableTester(object):
         self._table_name = table_name
 
         cfg = JinjaConfig("tests", self._connector._connector_type)
-        self._env = cfg.get_jinja_template_env()
+        self._env = cfg.environment
         
     def _get_test_sql(self, test_name, column_name, kwargs=None):
-
-        logger.info(test_name)
 
         template = self._env.get_template(f"{test_name}.sql")
 

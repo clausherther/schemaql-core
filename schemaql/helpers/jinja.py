@@ -37,17 +37,13 @@ class JinjaConfig(object):
     def __init__(self, template_type, connector_type):
         self._template_type = template_type
         self._connector_type = connector_type
+        self._environment = self._get_jinja_template_env()
  
-    @contextfunction
-    def log(self, context, msg):
-        logger.info(msg)
-
-    @contextfunction
-    def connector_macro(self, context, macro_name, *args, **kwargs):
-        connector_macro_name = f"{self._connector_type}__{macro_name}"
-        return context.vars[connector_macro_name](*args, **kwargs)
-
-    def get_jinja_template_env(self):
+    @property
+    def environment(self):
+        return self._environment
+        
+    def _get_jinja_template_env(self):
 
         template_path = schemaql_path.joinpath("templates", self._template_type).resolve()
         base_loader = FileSystemLoader(str(template_path))
@@ -66,3 +62,12 @@ class JinjaConfig(object):
         env.globals["connector_macro"] = self.connector_macro
 
         return env
+
+    @contextfunction
+    def log(self, context, msg):
+        logger.info(msg)
+
+    @contextfunction
+    def connector_macro(self, context, macro_name, *args, **kwargs):
+        connector_macro_name = f"{self._connector_type}__{macro_name}"
+        return context.vars[connector_macro_name](*args, **kwargs)

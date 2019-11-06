@@ -15,7 +15,7 @@ from schemaql.helpers.logger import logger, Fore, Back, Style
 
 
 @plac.annotations(
-    action=("Action ('test', or 'generate')", "option", "a"),
+    action=("Action ('test', or 'generate')"),
     project=("Project", "option", "p"),
     config_file=("Config file", "option", "c"),
     connections_file=("Connections file", "option", "x"),
