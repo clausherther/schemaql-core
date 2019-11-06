@@ -36,25 +36,26 @@ In `connections.yml` you define how to connect to one or more of your data wareh
 ```yaml
 project-1-snowflake:
 type: snowflake
-  account: theblacktux
-  # warehouse: DBT
-  role: SYSADMIN
-  user: tbtadmin
-  password: W@rehous3
-  database: TPCH
-  schema: WH
+  account: <my_account>
+  user: <my_user>
+  password: <my_password>
+  database: <my_database>
+  # optional:
+  warehouse: <my_warehouse>
+  role: <my_role>
+  schema: <my_initial_schema>
 
 project-2-bigquery:
 type: bigquery
-  database: dw-dev
-  credentials_path: "/Users/claus/dev/schemaql-bigquery-service-account.json"
+  database: <my_bigquery_project>
+  credentials_path: <path_to_my_service_account_credentials.json>
 ```
 
 In `config.yml`, you define the following
 - a `collector` which is a definition for how you want test results to be collected. Currently only 'json` is supported
 - `projects` which is a combination of a connection and a list of which databases and schemas you want to work with. If you don't define any schemas within the database key, all schemas will be processed.
 
-```
+```yaml
 collector:
     type: json
       output: output 
@@ -63,13 +64,16 @@ projects:
   project-1:
     connection: project-1-snowflake
     schema:
-      TPCH:
-      - ODS
-      - WH
+      database_1:
+      - schema_1
+      - schema_2
   project-2:
     connection: project-2-bigquery
     schema:
-      DW
+      my_bg_project_1
+      my_bg_project_2
+      - data_set_1
+      - data_set_2
 ```
 
 ### Generate
