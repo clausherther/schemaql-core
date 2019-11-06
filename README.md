@@ -4,7 +4,9 @@ A testing and auditing tool inspired by dbt, for those not using [dbt](https://w
 
 ## Installation
 1. Fork and clone to repo to a local folder.
-2. In the local repo folder, run `pip install -e .` to install a dev version locally.
+2. Create a new Python virtual environment in this folder and activate it.
+3. In the local repo folder, run `pip install -r  requirements` to install the dependent packages in this virtualenv.
+4. In the local repo folder, run `pip install -e .` to install a dev version locally.
 
 You should now be able to run `schemaql -h` from the command line.
 
