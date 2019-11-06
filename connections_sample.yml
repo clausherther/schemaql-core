@@ -1,12 +1,15 @@
 project-1-snowflake:
-  type: snowflake
-  database: DB
-  schema: MY_SCHEMA
-  url: "snowflake://<user>:<password>@<account.region>"
+type: snowflake
+  account: <my_account>
+  user: <my_user>
+  password: <my_password>
+  database: <my_database>
+  # optional:
+  warehouse: <my_warehouse>
+  role: <my_role>
+  schema: <my_initial_schema>
 
-
-project-2-snowflake:
-  type: snowflake
-  database: DW
-  schema: shop
-  url: "snowflake://<user>:<password>@<account.region>"
+project-2-bigquery:
+type: bigquery
+  database: <my_bigquery_project>
+  credentials_path: <path_to_my_service_account_credentials.json>

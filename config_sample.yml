@@ -6,14 +6,13 @@ projects:
   project-1:
     connection: project-1-snowflake
     schema:
-      TPCH:
-      - ODS
-      - WH
+      database_1:
+      - schema_1
+      - schema_2
   project-2:
-    connection: project-2-snowflake
+    connection: project-2-bigquery
     schema:
-      DW:
-      - customer
-      - shop
-      - marketing
-      - web
+      my_bg_project_1
+      my_bg_project_2
+      - data_set_1
+      - data_set_2
