@@ -1,8 +1,6 @@
 import sqlalchemy
-from sqlalchemy import create_engine
-
 from snowflake.sqlalchemy import URL
-# import snowflake.connector
+from sqlalchemy import create_engine
 
 from schemaql.connectors.base_connector import Connector
 

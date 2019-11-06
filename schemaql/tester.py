@@ -1,10 +1,13 @@
-from pathlib import Path
 import json
+from pathlib import Path
+
 from sqlalchemy.inspection import inspect
 
-from schemaql.helpers.fileio import check_directory_exists, read_yaml, schemaql_path
-from schemaql.helpers.jinja import JinjaConfig
-from schemaql.helpers.logger import logger, Fore, Back, Style
+from schemaql.helpers.fileio import (check_directory_exists, read_yaml,
+                                     schemaql_path)
+from schemaql.helpers.logger import Back, Fore, Style, logger
+from schemaql.jinja import JinjaConfig
+
 
 class TableTester(object):
     """
@@ -18,7 +21,7 @@ class TableTester(object):
         self._schema_name = schema_name
         self._table_name = table_name
 
-        cfg = JinjaConfig("tests", self._connector._connector_type)
+        cfg = JinjaConfig("tests", self._connector)
         self._env = cfg.environment
         
     def _get_test_sql(self, test_name, column_name, kwargs=None):
@@ -68,6 +71,7 @@ class TableTester(object):
                 kwargs = test[test_name]
             else:
                 test_name = test
+                kwargs = None
 
             column_name = "table_test"
             test_result = self._get_test_results(test_name, column_name, kwargs,)

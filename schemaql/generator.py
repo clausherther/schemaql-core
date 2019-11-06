@@ -1,9 +1,11 @@
 from pathlib import Path
-from jinja2 import Template, FileSystemLoader, Environment
 
-from schemaql.helpers.fileio import check_directory_exists, read_yaml, schemaql_path
-from schemaql.helpers.jinja import JinjaConfig
-from schemaql.helpers.logger import logger, Fore, Back, Style
+from jinja2 import Environment, FileSystemLoader, Template
+
+from schemaql.helpers.fileio import (check_directory_exists, read_yaml,
+                                     schemaql_path)
+from schemaql.helpers.logger import Back, Fore, Style, logger
+from schemaql.jinja import JinjaConfig
 
 
 class TableSchemaGenerator(object):
@@ -20,7 +22,7 @@ class TableSchemaGenerator(object):
         self._table = table
         self._columns = None
 
-        cfg = JinjaConfig("yaml", self._connector._connector_type)
+        cfg = JinjaConfig("yaml", self._connector)
         self._env = cfg.environment        
 
     def _make_schema_yaml(self,):

@@ -121,6 +121,12 @@ class Connector(object):
 
         return columns
 
+    def get_column_names(self, table, schema):
+
+        columns = self.inspector.get_columns(table, schema)
+
+        return [c["name"] for c in columns]
+
     def execute(self, sql):
 
         with self.engine.connect() as cur:
