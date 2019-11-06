@@ -20,7 +20,6 @@ class PrependingLoader(BaseLoader):
             injects/prepends all macro code
         """
         complete_prepend_source = ""
-
         if template not in self.prepend_templates:
             for prepend_template in self.prepend_templates:
                 prepend_source, _, _ = self.delegate.get_source(environment, prepend_template)
@@ -49,17 +48,21 @@ class JinjaConfig(object):
     def _get_jinja_template_environment(self):
 
         template_path = schemaql_path.joinpath("templates", self._template_type).resolve()
-        base_loader = FileSystemLoader(str(template_path))
-    
-        macro_path = schemaql_path.joinpath("templates", self._template_type, "macros")
+        template_dirs = set([str(t.parent) for t in Path(template_path).glob("**/*.sql")])
+        base_loader = FileSystemLoader(template_dirs)
 
+        # We get all macro files we want to prepend to the templates
+        macro_path = schemaql_path.joinpath("templates", self._template_type, "macros")
+        
         preload_macros = []
         for f in Path(macro_path).glob("**/*.sql"):
-            preload_macros.append(str(f.relative_to(template_path)))
+            macro_file_path = str(f.name)
+            preload_macros.append(macro_file_path)
 
         loader = PrependingLoader(base_loader, preload_macros)
 
         env = Environment(loader=loader)
+        
         env.filters["difference"] = self.difference
         env.globals["log"] = self.log
         env.globals["connector"] = self._connector 

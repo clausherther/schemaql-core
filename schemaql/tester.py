@@ -34,7 +34,7 @@ class TableTester(object):
             column=column_name,
             kwargs=kwargs,
         )
-        # logger.info(sql)
+
         return sql
 
     def _log_test_result(self, column_name, test_name, test_result):
