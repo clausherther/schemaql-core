@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 
 package_name = "schemaql"
-package_version = "0.0.1"
+package_version = "0.0.2"
 description = "A testing and auditing tool inspired by dbt, for those not using dbt."
 
 setup(

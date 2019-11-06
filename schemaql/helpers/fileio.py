@@ -2,12 +2,18 @@ from pathlib import Path
 import yaml
 import inspect
 
+from schemaql.helpers.logger import logger
+
 schemaql_path = Path(__file__).parent.parent
 
 def read_yaml(yaml_path, storage_model='local'):
 
-    with open(Path(yaml_path).resolve(), 'r') as f:
-        yml = yaml.load(f, Loader=yaml.FullLoader)
+    try:
+        with open(Path(yaml_path).resolve(), 'r') as f:
+            yml = yaml.load(f, Loader=yaml.FullLoader)
+    except FileNotFoundError:
+        logger.info(f"Could not find {yaml_path}. Please check that {yaml_path} exists.")
+        raise
 
     return yml
 

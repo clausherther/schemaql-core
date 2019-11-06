@@ -3,11 +3,12 @@ from logging.handlers import SMTPHandler, TimedRotatingFileHandler
 from pathlib import Path
 from colorama import Back, Fore, Style, init
 
-from schemaql.helpers.fileio import check_directory_exists
-
 init(autoreset=True)
 
 DEFAULT_LOG_PATH = Path("logs")
+
+def check_directory_exists(directory):
+    Path(directory).mkdir(parents=True, exist_ok=True)
 
 def make_logger():
     """
@@ -22,7 +23,8 @@ def make_logger():
     ch.setLevel(logging.INFO)
     ch.setFormatter(formatter)
 
-    check_directory_exists(DEFAULT_LOG_PATH)
+    Path(DEFAULT_LOG_PATH).mkdir(parents=True, exist_ok=True)
+
     log_path = DEFAULT_LOG_PATH.joinpath("schemaql.log")
     fh = TimedRotatingFileHandler(filename=log_path, when="d", interval=1, backupCount=7)
     fh.setLevel(logging.INFO)
