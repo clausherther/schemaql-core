@@ -47,13 +47,13 @@ class JinjaConfig(object):
         
     def _get_jinja_template_environment(self):
 
-        template_path = schemaql_path.joinpath("templates", self._template_type).resolve()
+        template_path = schemaql_path.joinpath("templates").resolve()
         # templates can have any extension
         template_dirs = set([str(t.parent) for t in Path(template_path).glob("**/*.*")])
         base_loader = FileSystemLoader(template_dirs)
 
         # We get all macro files we want to prepend to the templates
-        macro_path = schemaql_path.joinpath("templates", self._template_type, "macros")
+        macro_path = schemaql_path.joinpath("templates", "macros")
         
         preload_macros = []
         # you can only write macros in files using a .sql extensions

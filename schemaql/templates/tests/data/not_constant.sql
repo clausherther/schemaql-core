@@ -1,8 +1,8 @@
 with validation_errors as (
     select
-      count({{ column }})
+      count(distinct {{ column }}) as cnt
     from {{ schema }}.{{ table }}
-    having count({{ column }}) = 0
+    having count(distinct {{ column }}) = 1
 )
 select count(*) as test_result
 from

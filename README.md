@@ -115,5 +115,6 @@ schemaql test -p"my_project"
 #### at_least_one
 #### equal_expression (TBD)
 #### frequency (TBD)
+#### not_constant
 #### recency (TBD)
 #### unique_rows

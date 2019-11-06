@@ -2,11 +2,11 @@
     concat(
     {% for col in columns -%}
         coalesce(cast({{ col }} as {{ type_string() }}), '')
-        {%- if not loop.last %},"|",{% endif -%}
+        {%- if not loop.last %},'|',{% endif -%}
     {% endfor -%}
     )
 {%- endmacro -%}
-{% macro hash(columns) -%}
+{%- macro hash(columns) -%}
    {{ connector_macro('hash', columns) }}
 {%- endmacro %}
 
