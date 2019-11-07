@@ -33,7 +33,7 @@ class TableTester(object):
             table=self._table_name,
             column=column_name,
             kwargs=kwargs,
-        )
+        ).strip()
 
         return sql
 

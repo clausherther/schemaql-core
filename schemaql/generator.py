@@ -38,7 +38,7 @@ class TableSchemaGenerator(object):
         """
 
         template = self._env.get_template("schema.yml")
-        yml = template.render(schema=self._schema, table=self._table, columns=self._columns)
+        yml = template.render(schema=self._schema, table=self._table, columns=self._columns).strip()
 
         return yml
 
