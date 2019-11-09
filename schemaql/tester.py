@@ -9,17 +9,17 @@ from schemaql.helpers.logger import Back, Fore, Style, logger
 from schemaql.jinja import JinjaConfig
 
 
-class TableTester(object):
+class EntityTester(object):
     """
-    TableTester class
+    EntityTester class
     """
 
-    def __init__(self, connector, database_name, schema_name, table_name):
+    def __init__(self, connector, database_name, schema_name, entity_name):
 
         self._connector = connector
         self._database_name = database_name
         self._schema_name = schema_name
-        self._table_name = table_name
+        self._entity_name = entity_name
 
         cfg = JinjaConfig("tests", self._connector)
         self._env = cfg.environment
@@ -30,23 +30,23 @@ class TableTester(object):
 
         sql = template.render(
             schema=self._schema_name,
-            table=self._table_name,
+            entity=self._entity_name,
             column=column_name,
             kwargs=kwargs,
         ).strip()
 
         return sql
 
-    def _log_test_result(self, column_name, test_name, test_result):
+    def _log_test_result(self, column_name, test_name, test_passed, test_result):
 
         LINE_WIDTH = 88
         RESULT_WIDTH = 30
         MSG_WIDTH = LINE_WIDTH - RESULT_WIDTH  # =58
 
-        result_msg = f"{self._table_name}.{column_name}: {test_name}"[:MSG_WIDTH]
+        result_msg = f"{self._entity_name}.{column_name}: {test_name}"[:MSG_WIDTH]
         result_msg = result_msg.ljust(MSG_WIDTH, ".")
 
-        if test_result == 0:
+        if test_passed:
             colored_pass = Fore.GREEN + "PASS" + Style.RESET_ALL
             logger.info(result_msg + f"[{colored_pass}]".rjust(RESULT_WIDTH, "."))
 
@@ -62,8 +62,9 @@ class TableTester(object):
 
         return test_result
 
-    def run_table_tests(self, tests):
+    def run_entity_tests(self, tests):
 
+        test_results = []
         for test in tests:
 
             if type(test) is dict:
@@ -73,24 +74,30 @@ class TableTester(object):
                 test_name = test
                 kwargs = None
 
-            column_name = "table_test"
+            column_name = "__entity_TEST__"
             test_result = self._get_test_results(test_name, column_name, kwargs,)
+            test_passed = test_result == 0
+            test_results.append({
+                "entity_name": self._entity_name, 
+                "column_name": column_name, 
+                "test_name": test_name,
+                "test_passed": test_passed,
+                "test_result": test_result
+                })
 
             self._log_test_result(
-                column_name, test_name, test_result,
+                column_name, test_name, test_passed, test_result,
             )
-
+        return test_results
 
     def run_column_tests(self, column_schema):
 
-        test_results = {}
+        test_results = []
 
         for column in column_schema:
 
             column_name = column["name"]
             kwargs = None
-
-            column_test_results = []
 
             for test in column["tests"]:
 
@@ -102,21 +109,18 @@ class TableTester(object):
 
                 test_result = self._get_test_results(test_name, column_name, kwargs,)
 
-                column_test_results.append({test_name: test_result})
+                test_passed = test_result == 0
 
-                self._log_test_result(
-                    column_name, test_name, test_result,
-                )
+                test_results.append({
+                    "entity_name": self._entity_name, 
+                    "column_name": column_name, 
+                    "test_name": test_name,
+                    "test_passed": test_passed,
+                    "test_result": test_result
+                    })
 
-            if len(column_test_results) > 0:
-                if self._table_name not in test_results:
-                    test_results[self._table_name] = {}
-
-                if column_name not in test_results[self._table_name]:
-                    test_results[self._table_name][column_name] = {}
-
-                test_results[self._table_name][column_name] = column_test_results
-
+                self._log_test_result(column_name, test_name, test_passed, test_result)
+ 
         return test_results
 
 
@@ -146,23 +150,22 @@ def test_schema(connector, databases, project_name):
 
             for p in schema_files:
 
-                table_schema = read_yaml(p.resolve())
+                entity_schema = read_yaml(p.resolve())
 
-                for table in table_schema["models"]:
+                for entity in entity_schema["models"]:
 
-                    table_name = table["name"]
-                    table_tester = TableTester(
-                        connector, database_name, schema_name, table_name
+                    entity_name = entity["name"]
+                    entity_tester = EntityTester(
+                        connector, database_name, schema_name, entity_name
                     )
 
-                    table_tests = table["tests"] if "tests" in table else None
-                    if table_tests:
-                        table_tester.run_table_tests(table_tests)
+                    entity_tests = entity["tests"] if "tests" in entity else None
+                    if entity_tests:
+                        entity_test_results = entity_tester.run_entity_tests(entity_tests)
+                        test_results[project_name] += entity_test_results
 
-                    columns = table["columns"]
-
-                    test_results[project_name].append(
-                        table_tester.run_column_tests(columns)
-                    )
+                    columns = entity["columns"]
+                    column_test_results = entity_tester.run_column_tests(columns)
+                    test_results[project_name] += column_test_results
 
     return test_results

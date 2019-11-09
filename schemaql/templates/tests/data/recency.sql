@@ -4,7 +4,7 @@ with recent_data as (
     select
         count(*) as cnt
     from 
-        {{ schema }}.{{ table }}
+        {{ schema }}.{{ entity }}
     where 
         {{ column }} >=
         {{ dateadd(datepart, interval * -1, current_timestamp()) }}
