@@ -31,7 +31,6 @@ class DbCollector(Collector):
 
         df_results["test_result_id"] = df_results.apply(lambda x: str(uuid.uuid1()), axis=1)
 
-        logger.info(df_results)
         logger.info(f"Collecting on {self._connector.connector_type}")
         if self._connector.supports_multi_insert:
             insert_method = "multi"
