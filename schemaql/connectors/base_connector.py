@@ -19,7 +19,7 @@ class Connector(object):
         self._database = connection_info.get("database", None)
         self._schema = connection_info.get("schema", None)
         self._url = connection_info.get("password", None)
-        self._supports_multi_insert = connection_info.get("supports_multi_insert", False)
+        self._supports_multi_insert = connection_info.get("supports_multi_insert", True)
 
         self._connect_url = None
         self._engine = None
