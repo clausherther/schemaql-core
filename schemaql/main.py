@@ -21,12 +21,14 @@ from schemaql.helpers.logger import logger, Fore, Back, Style
     connections_file=("Connections file", "option", "x"),
 )
 def main(
-    action="test",
+    action,
     project=None,
     config_file="config.yml",
     connections_file="connections.yml",
 ):
 
+    logger.info(f"schemaql_path: {schemaql_path}" )
+    
     supported_collectors = {"json": JsonCollector}
     supported_connectors = {
         "snowflake": SnowflakeConnector,
