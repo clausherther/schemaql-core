@@ -55,10 +55,11 @@ class JinjaConfig(object):
         custom_macro_path = Path(Path("macros").resolve())
 
         # templates can have any extension
-        template_dirs = list(set([str(t.parent) for t in template_path.glob("**/*.*")]))
-        template_dirs += list(set([str(t.parent) for t in custom_test_path.glob("**/*.sql")]))
-
+        template_dirs = list(set([str(t.parent) for t in custom_test_path.glob("**/*.*")]))
         template_dirs += list(set([str(t.parent) for t in custom_macro_path.glob("**/*.sql")]))
+
+        template_dirs += list(set([str(t.parent) for t in template_path.glob("**/*.*")]))
+
         
         base_loader = FileSystemLoader(template_dirs)
         
@@ -86,6 +87,7 @@ class JinjaConfig(object):
     @contextfunction
     def log(self, context, msg):
         logger.info(msg)
+        return ""
 
     @contextfilter
     def difference(self, context, first, second):
