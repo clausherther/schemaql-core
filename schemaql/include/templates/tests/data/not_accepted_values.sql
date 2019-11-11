@@ -1,12 +1,12 @@
-{%- set values = kwargs.get('values', []) -%}
-{%- set quote_values = kwargs.get('quote', True) -%}
+{%- set values = kwargs["values"] if "values" in kwargs else [] -%}
+{%- set quote_values = kwargs["quote"] if "quote" in kwargs else True -%}
 with all_values as (
     select distinct
         {{ column }} as value_field
     from {{ schema }}.{{ entity }}
-    {%- if 'null' in values or 'NULL' in values -%}
+    {%- if 'null' in values or 'NULL' in values %}
     where {{ column }} is not null
-    {%- endif -%}
+    {% endif -%}
 ),
 validation_errors as (
 
@@ -15,7 +15,7 @@ validation_errors as (
 
     from all_values
     where 
-        value_field not in (
+        value_field in (
         {% for val in values -%}
             {% if val|lower != 'null' %}
                 {% if quote_values -%}

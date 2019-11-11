@@ -1,4 +1,5 @@
-{% set quote_values = kwargs.get('quote', True) %}
+{%- set values = kwargs["values"] if "values" in kwargs else [] -%}
+{%- set quote_values = kwargs["quote"] if "quote" in kwargs else True -%}
 
 with all_values as (
     select distinct
@@ -12,7 +13,7 @@ validation_errors as (
 
     from all_values
     where value_field not in (
-        {% for val in kwargs["values"] -%}
+        {% for val in values -%}
             {% if quote_values -%}
             '{{ val }}'
             {%- else -%}
