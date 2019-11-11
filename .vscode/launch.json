@@ -17,7 +17,7 @@
             "type": "python",
             "request": "launch",
             "program": "${file}",
-            "args": ["-p", "tpch"],
+            "args": ["test", "-p", "tpch"],
             "console": "integratedTerminal"
         },
         {
