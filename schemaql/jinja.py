@@ -47,11 +47,11 @@ class JinjaConfig(object):
         
     def _get_jinja_template_environment(self):
 
-        template_path = schemaql_path.joinpath("templates")
+        template_path = schemaql_path.joinpath("include", "templates")
         custom_test_path = Path(Path("tests").resolve())
 
         # We get all macro files we want to prepend to the templates
-        macro_path = Path(schemaql_path.joinpath("templates", "macros"))
+        macro_path = Path(schemaql_path.joinpath("include", "templates", "macros"))
         custom_macro_path = Path(Path("macros").resolve())
 
         # templates can have any extension
