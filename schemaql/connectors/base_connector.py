@@ -13,23 +13,18 @@ class Connector(object):
     def __init__(self, connection_info):
 
         self._connector_type = connection_info["type"]
-        self._user = connection_info["user"] if "user" in connection_info else None
-        self._password = (
-            connection_info["password"] if "password" in connection_info else None
-        )
-        self._database = (
-            connection_info["database"] if "database" in connection_info else None
-        )
-        self._schema = (
-            connection_info["schema"] if "schema" in connection_info else None
-        )
-        self._url = connection_info["url"] if "url" in connection_info else None
+
+        self._user = connection_info.get("user", None)
+        self._password = connection_info.get("password", None)
+        self._database = connection_info.get("database", None)
+        self._schema = connection_info.get("schema", None)
+        self._url = connection_info.get("password", None)
+        self._supports_multi_insert = connection_info.get("supports_multi_insert", False)
 
         self._connect_url = None
         self._engine = None
         self._inspector = None
 
-    
 
     @property
     def connector_type(self):
@@ -85,6 +80,12 @@ class Connector(object):
         self._connect_url = self._make_url()
         return self._connect_url
 
+
+    @property
+    def supports_multi_insert(self):
+        return self._supports_multi_insert
+        
+    
     def _make_url(self):
 
         url = f"{self._url}"

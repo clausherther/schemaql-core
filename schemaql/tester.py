@@ -14,9 +14,10 @@ class EntityTester(object):
     EntityTester class
     """
 
-    def __init__(self, connector, database_name, schema_name, entity_name):
+    def __init__(self, connector, project_name, database_name, schema_name, entity_name):
 
         self._connector = connector
+        self._project_name = project_name
         self._database_name = database_name
         self._schema_name = schema_name
         self._entity_name = entity_name
@@ -62,6 +63,19 @@ class EntityTester(object):
 
         return test_result
 
+    def _make_test_result_row(self, column_name, test_name, test_passed, test_result):
+
+        return {
+                "project_name": self._project_name,
+                "database_name": self._database_name,
+                "schema_name": self._schema_name,
+                "entity_name": self._entity_name, 
+                "column_name": column_name, 
+                "test_name": test_name,
+                "test_passed": test_passed,
+                "test_result": test_result
+                }
+
     def run_entity_tests(self, tests):
 
         test_results = []
@@ -77,13 +91,7 @@ class EntityTester(object):
             column_name = "__entity_TEST__"
             test_result = self._get_test_results(test_name, column_name, kwargs,)
             test_passed = test_result == 0
-            test_results.append({
-                "entity_name": self._entity_name, 
-                "column_name": column_name, 
-                "test_name": test_name,
-                "test_passed": test_passed,
-                "test_result": test_result
-                })
+            test_results.append(self._make_test_result_row(column_name, test_name, test_passed, test_result))
 
             self._log_test_result(
                 column_name, test_name, test_passed, test_result,
@@ -111,13 +119,7 @@ class EntityTester(object):
 
                 test_passed = test_result == 0
 
-                test_results.append({
-                    "entity_name": self._entity_name, 
-                    "column_name": column_name, 
-                    "test_name": test_name,
-                    "test_passed": test_passed,
-                    "test_result": test_result
-                    })
+                test_results.append(self._make_test_result_row(column_name, test_name, test_passed, test_result))
 
                 self._log_test_result(column_name, test_name, test_passed, test_result)
  
@@ -126,8 +128,7 @@ class EntityTester(object):
 
 def test_schema(connector, databases, project_name):
 
-    test_results = {}
-    test_results[project_name] = []
+    test_results = []
 
     for database_name in databases:
         connector.database = database_name
@@ -156,16 +157,16 @@ def test_schema(connector, databases, project_name):
 
                     entity_name = entity["name"]
                     entity_tester = EntityTester(
-                        connector, database_name, schema_name, entity_name
+                        connector, project_name, database_name, schema_name, entity_name
                     )
 
                     entity_tests = entity["tests"] if "tests" in entity else None
                     if entity_tests:
                         entity_test_results = entity_tester.run_entity_tests(entity_tests)
-                        test_results[project_name] += entity_test_results
+                        test_results += entity_test_results
 
                     columns = entity["columns"]
                     column_test_results = entity_tester.run_column_tests(columns)
-                    test_results[project_name] += column_test_results
+                    test_results += column_test_results
 
     return test_results
