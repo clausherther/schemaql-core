@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 
 package_name = "schemaql"
-package_version = "0.0.2a1"
+package_version = "0.0.3a1"
 description = "A testing and auditing tool inspired by dbt, for those not using dbt."
 
 setup(
@@ -19,7 +19,7 @@ setup(
     # download_url
     # url="https://github.com/clausherther/schemaql",
     packages=find_packages(),
-    data_files=[('include', ['*.sql', '*.sql'])],
+    data_files=[('include', ['*.sql', '*.yml'])],
     scripts=['bin/schemaql'],
     python_requires='>=3.6',
     install_requires=[
