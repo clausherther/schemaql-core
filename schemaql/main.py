@@ -5,7 +5,7 @@ from jinja2 import Template, FileSystemLoader, Environment
 from sqlalchemy.inspection import inspect
 
 from schemaql.project import Project
-from schemaql.collector import JsonCollector
+from schemaql.collectors.base_collector import JsonCollector
 
 from schemaql.helpers.fileio import check_directory_exists, read_yaml, schemaql_path
 from schemaql.connectors.base_connector import Connector
