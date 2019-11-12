@@ -72,7 +72,7 @@ collector:
   output: output 
 ```
 
-For `database`, you need to provide the name of a connection (from `connections.yml` and a destination table via `output`):
+For `database` collection, you need to provide the name of a connection (from `connections.yml`) and a destination table via `output`:
 
 ```yaml
 collector:
