@@ -13,21 +13,30 @@
             "console": "integratedTerminal"
         },
         {
-            "name": "SchemaQL - Test Project",
+            "name": "SchemaQL - Test",
             "type": "python",
             "request": "launch",
             "program": "${file}",
-            "args": ["test", "-p", "tpch"],
+            "args": ["test", "-p", "jaffle-shop-sf"],
             "console": "integratedTerminal"
         },
         {
-            "name": "SchemaQL - Test Generate",
+            "name": "SchemaQL - Generate",
             "type": "python",
             "request": "launch",
             "program": "${file}",
             "args": ["generate"],
             "console": "integratedTerminal"
+        },
+        {
+            "name": "SchemaQL - Agg",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "args": ["agg", "-p", "jaffle-shop-sf"],
+            "console": "integratedTerminal"
         }
+
 
 
     ]

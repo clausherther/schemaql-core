@@ -44,7 +44,7 @@ class EntityTester(object):
         RESULT_WIDTH = 30
         MSG_WIDTH = LINE_WIDTH - RESULT_WIDTH  # =58
 
-        result_msg = f"{self._entity_name}.{column_name}: {test_name}"[:MSG_WIDTH]
+        result_msg = f"{self._entity_name}.{column_name}__{test_name}"[:MSG_WIDTH]
         result_msg = result_msg.ljust(MSG_WIDTH, ".")
 
         if test_passed:
@@ -107,7 +107,8 @@ class EntityTester(object):
             column_name = column["name"]
             kwargs = None
 
-            for test in column["tests"]:
+            column_tests = column["tests"] if "tests" in column else []
+            for test in column_tests:
 
                 if type(test) is dict:
                     test_name = list(test)[0]
@@ -122,7 +123,7 @@ class EntityTester(object):
                 test_results.append(self._make_test_result_row(column_name, test_name, test_passed, test_result))
 
                 self._log_test_result(column_name, test_name, test_passed, test_result)
- 
+    
         return test_results
 
 

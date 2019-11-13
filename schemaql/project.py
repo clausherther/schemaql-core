@@ -1,6 +1,7 @@
-from schemaql.helpers.logger import logger, Fore, Back, Style
+from schemaql.helpers.logger import (logger, Fore, Back, Style)
 from schemaql.generator import TableSchemaGenerator
 import schemaql.tester as tester
+import schemaql.aggregator as aggregator
 
 class Project(object):
     """
@@ -47,3 +48,11 @@ class Project(object):
         test_results = tester.test_schema(self._connector, self._databases, self._project_name)
 
         return test_results
+
+    
+    def aggregate_database_schema(self):
+
+        metric_results = aggregator.aggregate_schema(self._connector, self._databases, self._project_name)
+
+        return metric_results
+
