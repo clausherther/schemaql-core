@@ -5,15 +5,15 @@ from jinja2 import Template, FileSystemLoader, Environment
 from sqlalchemy.inspection import inspect
 
 from schemaql.project import Project
-from schemaql.collectors.base_collector import JsonCollector
-from schemaql.collectors.csv_collector import CsvCollector
-from schemaql.collectors.db_collector import DbCollector
+from schemaql.collectors import JsonCollector
+from schemaql.collectors import CsvCollector
+from schemaql.collectors import DbCollector
 
-from schemaql.helpers.fileio import check_directory_exists, read_yaml, schemaql_path
+from schemaql.helpers.fileio import (check_directory_exists, read_yaml, schemaql_path)
 from schemaql.connectors.base_connector import Connector
 from schemaql.connectors.bigquery import BigQueryConnector
 from schemaql.connectors.snowflake import SnowflakeConnector
-from schemaql.helpers.logger import logger, Fore, Back, Style
+from schemaql.helpers.logger import (logger, Fore, Back, Style)
 
 
 def _get_collector(collector_config, connections):
@@ -70,7 +70,7 @@ def _get_project_config(projects_config, project_name, connections):
 
 
 @plac.annotations(
-    action=("Action ('test', or 'generate')"),
+    action=("Action ('test', 'agg' or 'generate')"),
     project=("Project", "option", "p"),
     config_file=("Config file", "option", "c"),
     connections_file=("Connections file", "option", "x"),
@@ -84,13 +84,16 @@ def main(
     config = read_yaml(config_file)
     connections = read_yaml(connections_file)
 
+    assert (
+            "collector" in config
+        ), "'collector' needs to be specified in config.yml"
+            
     collector_config = config["collector"]
     collector = _get_collector(collector_config, connections)
 
     projects_config = config["projects"]
     if project is not None:
         projects_config = {project: projects_config[project]}
-
 
     for project_name in projects_config:
 
@@ -106,6 +109,9 @@ def main(
 
             test_results = project.test_database_schema()
             collector.save_test_results(project_name, test_results)
+
+        elif action == "agg":
+            metric_results = project.aggregate_database_schema()
 
 
 if __name__ == "__main__":

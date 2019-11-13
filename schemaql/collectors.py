@@ -55,12 +55,71 @@ class JsonCollector(Collector):
         super().__init__(collector_config)
 
         self._output_location = collector_config["output"]
+        self._output_file = "test_results.json"
 
     def save_test_results(self, project_name, test_results):
+
+        logger.info(f"Collecting to {self._output_file}")
 
         test_results_json = json.dumps(test_results, indent=4, sort_keys=True)
 
         output_directory = Path(self._output_location).joinpath(project_name)
         check_directory_exists(output_directory)
-        json_output_file = output_directory.joinpath("test_results.json")
+        json_output_file = output_directory.joinpath(self._output_file)
         json_output_file.write_text(test_results_json)
+
+
+class CsvCollector(Collector):
+    """
+    CSV Collector
+    """
+
+    def __init__(self, collector_config):
+        super().__init__(collector_config)
+
+        self._output_location = collector_config["output"]
+        self._output_file = "test_results.csv"
+
+    def save_test_results(self, project_name, test_results):
+
+        logger.info(f"Collecting to {self._output_file}")
+
+        df_results = self.convert_to_dataframe(test_results)
+
+        output_directory = Path(self._output_location).joinpath(project_name)
+        check_directory_exists(output_directory)
+        csv_output_file = output_directory.joinpath(self._output_file)
+        df_results.to_csv(csv_output_file, index=False)
+
+
+class DbCollector(Collector):
+    """
+    Database Collector
+    """
+
+    def __init__(self, collector_config, connector):
+        super().__init__(collector_config)
+
+        self._output = collector_config["output"]
+        self._connector = connector
+
+    def save_test_results(self, project_name, test_results):
+
+        df_results = self.convert_to_dataframe(test_results)
+
+        if self._connector.supports_multi_insert:
+            insert_method = "multi"
+            logger.info("Using multi-row inserts")
+        else:
+            insert_method = None
+            logger.info("Using single-row inserts")
+
+        with self._connector.connect() as con:
+
+            df_results.to_sql(
+                name=self._output,
+                con=con,
+                if_exists="append",
+                index=False,
+                method=insert_method,
+            )
