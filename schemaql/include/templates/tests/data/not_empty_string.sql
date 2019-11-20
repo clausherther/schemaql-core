@@ -1,4 +1,10 @@
+with validation_errors as (
+    select
+        *
+    from {{ schema }}.{{ entity }}
+    where
+        trim({{ column }}) = ''
+)
 select count(*) as test_result
-from {{ schema }}.{{ entity }}
-where
-    trim({{ column }}) = ''
+from
+    validation_errors
