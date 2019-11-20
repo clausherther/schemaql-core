@@ -2,7 +2,7 @@ from pathlib import Path
 
 from jinja2 import (BaseLoader, Environment, FileSystemLoader,
                     contextfilter, contextfunction)
-
+import jinja2.exceptions
 from schemaql.helpers.fileio import schemaql_path
 from schemaql.helpers.logger import logger
 
@@ -158,3 +158,24 @@ class JinjaConfig(object):
         env.filters["difference"] = self.difference
 
         return env
+
+    def get_template(self, template_name):
+        try:
+            return self.environment.get_template(template_name)
+
+        except (jinja2.exceptions.TemplateSyntaxError,
+                jinja2.exceptions.UndefinedError) as e:
+            raise e
+
+    def render_template(self, template, kwargs):
+        try:
+            return template.render(**kwargs).strip()
+
+        except (jinja2.exceptions.TemplateSyntaxError,
+                jinja2.exceptions.UndefinedError) as e:
+            raise e
+
+    def get_rendered(self, template_name, kwargs):
+        template = self.get_template(template_name)
+
+        return self.render_template(template, kwargs)

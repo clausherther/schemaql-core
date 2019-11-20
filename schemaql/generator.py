@@ -19,23 +19,16 @@ class TableSchemaGenerator(object):
         self._table = table
         self._columns = None
 
-        cfg = JinjaConfig("yaml", self._connector)
-        self._env = cfg.environment
+        self._jinja = JinjaConfig("yaml", self._connector)
 
     def _make_schema_yaml(self,):
-        """Renders schema yaml template from metadata
 
-        Arguments:
-            schema {string} -- name of schema
-            table {string} -- name of table
-            columns {list} -- list of columns
-
-        Returns:
-            string -- rendered yaml
-        """
-
-        template = self._env.get_template("schema.yml")
-        yml = template.render(schema=self._schema, table=self._table, columns=self._columns).strip()
+        template_name = "schema.yml"
+        yml = self._jinja.get_rendered(template_name,
+                                       kwargs={"schema": self._schema,
+                                               "table": self._table,
+                                               "columns": self._columns}
+                                       )
 
         return yml
 

@@ -30,21 +30,21 @@ class Aggregator(object):
         self._entity_name = entity_name
         self._aggregation_type = aggregation_type
 
-        cfg = JinjaConfig(self._aggregation_type, self._connector)
-        self._env = cfg.environment
+        self._jinja = JinjaConfig(self._aggregation_type, self._connector)
 
         self._passed_func = lambda c: None
 
     def _get_sql(self, aggregation_name, column_name, kwargs=None):
 
-        template = self._env.get_template(f"{aggregation_name}.sql")
-
-        sql = template.render(
-            schema=self._schema_name,
-            entity=self._entity_name,
-            column=column_name,
-            kwargs=kwargs,
-        ).strip()
+        sql = self._jinja.get_rendered(
+            f"{aggregation_name}.sql",
+            kwargs={
+                "schema": self._schema_name,
+                "entity": self._entity_name,
+                "column": column_name,
+                "kwargs": kwargs
+            }
+        )
 
         return sql
 
