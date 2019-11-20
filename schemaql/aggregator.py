@@ -1,10 +1,6 @@
-import json
-from pathlib import Path
+from colorama import Fore, Style
 
-from sqlalchemy.inspection import inspect
-
-from schemaql.helpers.fileio import check_directory_exists, read_yaml, schemaql_path
-from schemaql.helpers.logger import Back, Fore, Style, logger
+from schemaql.helpers.logger import logger
 from schemaql.jinja import JinjaConfig
 
 
@@ -22,6 +18,10 @@ class Aggregator(object):
         entity_name,
         aggregation_type,
     ):
+
+        self.LINE_WIDTH = 88
+        self.RESULT_WIDTH = 30
+        self.MSG_WIDTH = self.LINE_WIDTH - self.RESULT_WIDTH  # =58
 
         self._connector = connector
         self._project_name = project_name
@@ -78,8 +78,26 @@ class Aggregator(object):
             "aggregation_result": aggregation_result,
         }
 
-    def log(self, column_name, aggregation_name, aggregation_passed, aggregation_result):
-        logger.info("Not implemented in Aggregator")
+    def _aggregation_name_fqn(self, column_name, aggregation_name):
+        agg_name = f"{self._entity_name}.{column_name}__{aggregation_name}"[:self.MSG_WIDTH]
+        agg_name = agg_name.ljust(self.MSG_WIDTH, ".")
+        return agg_name
+
+    def _color_me(self, msg, color):
+
+        colors = {
+            "red": Fore.RED,
+            "green": Fore.GREEN,
+            "white": Fore.WHITE,
+            "black": Fore.BLACK,
+            "blue": Fore.BLUE,
+            "yellow": Fore.YELLOW
+        }
+        assert color in colors, f"'{color}' is not supported"
+        return colors[color] + msg + Style.RESET_ALL
+
+    def _log_result(self, aggregation_name, result_msg):
+        logger.info(aggregation_name + f"[{result_msg}]".rjust(self.RESULT_WIDTH, "."))
 
     def _run_aggregations(self, aggregations, column_name, aggregation_results):
 
@@ -91,9 +109,7 @@ class Aggregator(object):
                 kwargs = aggregation[aggregation_name]
             else:
                 aggregation_name = aggregation
-            aggregation_description = (
-                    kwargs.get("description", "") if kwargs else ""
-                )
+            aggregation_description = kwargs.get("description", "") if kwargs else ""
 
             aggregation_result = self._get_aggregation_results(
                 aggregation_name, column_name, kwargs,
@@ -114,11 +130,11 @@ class Aggregator(object):
             )
 
             self.log(
-                column_name, 
-                aggregation_name, 
-                aggregation_passed, 
-                aggregation_result,
+                column_name, aggregation_name, aggregation_passed, aggregation_result,
             )
+
+    def log(self):
+        raise NotImplementedError("log not implemented!")
 
     def run_entity_aggregations(self, aggregations):
 
@@ -127,7 +143,6 @@ class Aggregator(object):
 
         self._run_aggregations(aggregations, column_name, aggregation_results)
         return aggregation_results
-
 
     def run_column_aggregations(self, column_schema):
 
@@ -143,6 +158,8 @@ class Aggregator(object):
                 else []
             )
 
-            self._run_aggregations(column_aggregations, column_name, aggregation_results)
+            self._run_aggregations(
+                column_aggregations, column_name, aggregation_results
+            )
 
         return aggregation_results

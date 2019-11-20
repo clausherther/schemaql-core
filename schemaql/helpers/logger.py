@@ -1,14 +1,16 @@
 import logging
-from logging.handlers import SMTPHandler, TimedRotatingFileHandler
+from logging.handlers import TimedRotatingFileHandler
 from pathlib import Path
-from colorama import Back, Fore, Style, init
+from colorama import init
 
 init(autoreset=True)
 
 DEFAULT_LOG_PATH = Path("logs")
 
+
 def check_directory_exists(directory):
     Path(directory).mkdir(parents=True, exist_ok=True)
+
 
 def make_logger():
     """
@@ -18,7 +20,7 @@ def make_logger():
 
     message_format = "%(asctime)s | %(message)s"
     formatter = logging.Formatter(message_format, datefmt="%H:%M:%S")
- 
+
     ch = logging.StreamHandler()
     ch.setLevel(logging.INFO)
     ch.setFormatter(formatter)

@@ -5,8 +5,8 @@ import uuid
 
 import pandas as pd
 
-from schemaql.helpers.fileio import check_directory_exists, read_yaml, schemaql_path
-from schemaql.helpers.logger import Back, Fore, Style, logger
+from schemaql.helpers.fileio import check_directory_exists
+from schemaql.helpers.logger import logger
 
 
 class Collector(object):
@@ -33,15 +33,15 @@ class Collector(object):
 
         if self.collect_failures_only:
             if "aggregation_passed" in list(df_results.columns):
-                df_results = df_results[df_results["aggregation_passed"] == False]
+                df_results = df_results[df_results["aggregation_passed"] is False]
 
-        df_results["aggregation_result"] = df_results["aggregation_result"].astype(float)
+        df_results["aggregation_result"] = df_results["aggregation_result"].astype(
+            float
+        )
         df_results["_batch_id"] = str(uuid.uuid1())
         df_results["_batch_timestamp"] = datetime.datetime.now()
 
-        df_results["_result_id"] = df_results.apply(
-            lambda x: str(uuid.uuid1()), axis=1
-        )
+        df_results["_result_id"] = df_results.apply(lambda x: str(uuid.uuid1()), axis=1)
 
         return df_results
 

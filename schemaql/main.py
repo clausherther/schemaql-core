@@ -1,23 +1,15 @@
-from pathlib import Path
-import json
 import plac
-from jinja2 import Template, FileSystemLoader, Environment
-from sqlalchemy.inspection import inspect
 
-from schemaql.project import Project
-from schemaql.collectors import JsonCollector
-from schemaql.collectors import CsvCollector
-from schemaql.collectors import DbCollector
-
-from schemaql.helpers.fileio import (check_directory_exists, read_yaml, schemaql_path)
-from schemaql.connectors.base_connector import Connector
+from schemaql.collectors import CsvCollector, DbCollector, JsonCollector
 from schemaql.connectors.bigquery import BigQueryConnector
 from schemaql.connectors.snowflake import SnowflakeConnector
-from schemaql.helpers.logger import (logger, Fore, Back, Style)
+from schemaql.helpers.fileio import read_yaml, schemaql_path
+from schemaql.helpers.logger import logger
+from schemaql.project import Project
 
 
 def _get_collector(collector_config, connections):
-    
+
     supported_collectors = {
         "json": JsonCollector,
         "csv": CsvCollector,
@@ -31,7 +23,8 @@ def _get_collector(collector_config, connections):
 
     if "connection" in collector_config:
         connector = _get_connector(connections[collector_config["connection"]])
-        collector = supported_collectors[collector_type](collector_config, connector)
+        collector = supported_collectors[collector_type](collector_config,
+                                                         connector)
     else:
         collector = supported_collectors[collector_type](collector_config)
 
@@ -76,7 +69,10 @@ def _get_project_config(projects_config, project_name, connections):
     connections_file=("Connections file", "option", "x"),
 )
 def main(
-    action, project=None, config_file="config.yml", connections_file="connections.yml",
+    action,
+    project=None,
+    config_file="config.yml",
+    connections_file="connections.yml",
 ):
 
     logger.info(f"schemaql_path: {schemaql_path}")
@@ -85,9 +81,9 @@ def main(
     connections = read_yaml(connections_file)
 
     assert (
-            "collector" in config
-        ), "'collector' needs to be specified in config.yml"
-            
+        "collector" in config
+    ), "'collector' needs to be specified in config.yml"
+
     collector_config = config["collector"]
     collector = _get_collector(collector_config, connections)
 
@@ -97,10 +93,12 @@ def main(
 
     for project_name in projects_config:
 
-        connector, databases = _get_project_config(projects_config, project_name, connections)
+        connector, databases = _get_project_config(
+            projects_config, project_name, connections
+        )
 
         project = Project(project_name, connector, databases)
-        
+
         if action == "generate":
 
             project.generate_database_schema()

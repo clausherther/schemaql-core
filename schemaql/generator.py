@@ -1,10 +1,7 @@
 from pathlib import Path
 
-from jinja2 import Environment, FileSystemLoader, Template
-
-from schemaql.helpers.fileio import (check_directory_exists, read_yaml,
-                                     schemaql_path)
-from schemaql.helpers.logger import Back, Fore, Style, logger
+from schemaql.helpers.fileio import check_directory_exists
+from schemaql.helpers.logger import logger
 from schemaql.jinja import JinjaConfig
 
 
@@ -23,16 +20,16 @@ class TableSchemaGenerator(object):
         self._columns = None
 
         cfg = JinjaConfig("yaml", self._connector)
-        self._env = cfg.environment        
+        self._env = cfg.environment
 
     def _make_schema_yaml(self,):
         """Renders schema yaml template from metadata
-        
+
         Arguments:
             schema {string} -- name of schema
             table {string} -- name of table
             columns {list} -- list of columns
-        
+
         Returns:
             string -- rendered yaml
         """

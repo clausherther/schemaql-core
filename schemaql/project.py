@@ -1,11 +1,11 @@
 from pathlib import Path
 
-from schemaql.helpers.fileio import (check_directory_exists, read_yaml,
-                                     schemaql_path)
-from schemaql.helpers.logger import (logger, Fore, Back, Style)
+from schemaql.helpers.fileio import read_yaml
+from schemaql.helpers.logger import logger
 from schemaql.generator import TableSchemaGenerator
 from schemaql.tester import TestAggregator
 from schemaql.metrics import MetricsAggregator
+
 
 class Project(object):
     """
@@ -17,7 +17,6 @@ class Project(object):
         self._project_name = project_name
         self._connector = connector
         self._databases = databases
-
 
     def generate_database_schema(self):
         """Generates yaml output file for connection and databases"""
@@ -46,14 +45,13 @@ class Project(object):
                 for table in tables:
                     generator = TableSchemaGenerator(self._project_name, self._connector, database, schema, table)
                     generator.generate_table_schema()
-    
+
     def _process_database_schema(self, aggregation_type):
 
-
         supported_aggregators = {
-                "tests": TestAggregator,
-                "metrics": MetricsAggregator,
-            }
+            "tests": TestAggregator,
+            "metrics": MetricsAggregator
+        }
 
         aggregation_results = []
 
@@ -104,7 +102,7 @@ class Project(object):
         test_results = self._process_database_schema("tests")
 
         return test_results
-    
+
     def aggregate_database_schema(self):
 
         metric_results = self._process_database_schema("metrics")

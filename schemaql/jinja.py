@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from jinja2 import (BaseLoader, Environment, FileSystemLoader, Template,
+from jinja2 import (BaseLoader, Environment, FileSystemLoader,
                     contextfilter, contextfunction)
 
 from schemaql.helpers.fileio import schemaql_path
@@ -25,7 +25,7 @@ class PrependingLoader(BaseLoader):
     def __init__(self, delegate, prepend_templates):
         self.delegate = delegate
         self.prepend_templates = prepend_templates
- 
+
     def get_source(self, environment, template):
         """Overrides the base get_source function and
             injects/prepends all macro code
@@ -35,15 +35,19 @@ class PrependingLoader(BaseLoader):
             for prepend_template in self.prepend_templates:
                 prepend_source, _, _ = self.delegate.get_source(environment, prepend_template)
                 complete_prepend_source += prepend_source
-        
+
         main_source, main_filename, main_uptodate = self.delegate.get_source(environment, template)
-        uptodate = lambda: main_uptodate()
+
+        def uptodate():
+            return main_uptodate()
+
         complete_source = (complete_prepend_source + main_source)
 
         return complete_source, main_filename, uptodate
- 
+
     def list_templates(self):
         return self.delegate.list_templates()
+
 
 class JinjaConfig(object):
 
@@ -51,11 +55,11 @@ class JinjaConfig(object):
         self._template_type = template_type
         self._connector = _connector
         self._environment = self._get_jinja_template_environment()
- 
+
     @property
     def environment(self):
         return self._environment
-    
+
     @contextfunction
     def get_context(self, context):
         return context
@@ -97,7 +101,7 @@ class JinjaConfig(object):
         default_macro_name = f"default{separator}{macro_name}"
         connector_macro_name = f"{self._connector.connector_type}{separator}{macro_name}"
         if connector_macro_name not in package_context.vars:
-            connector_macro_name = default_macro_name 
+            connector_macro_name = default_macro_name
 
         return package_context.vars[connector_macro_name](*args, **kwargs)
 
@@ -131,26 +135,26 @@ class JinjaConfig(object):
                 preload_macros.append(macro_file_path)
 
         return preload_macros
- 
+
     def _get_jinja_template_environment(self):
 
         template_dirs, macro_path, custom_macro_path = self._get_template_paths()
-        
+
         base_loader = FileSystemLoader(template_dirs)
-        
+
         preload_macros = self._get_preload_macros([macro_path, custom_macro_path])
 
         loader = PrependingLoader(base_loader, preload_macros)
 
         env = Environment(loader=loader)
-        
+
         env.globals["log"] = self.log
         env.globals["connector"] = self._connector
         env.globals["context"] = self.get_context
         env.globals["connector_macro"] = self.connector_macro
 
         env.globals["api.types.set"] = self.set_func
-        
+
         env.filters["difference"] = self.difference
 
         return env
