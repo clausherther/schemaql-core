@@ -32,14 +32,14 @@ class Collector(object):
         df_results = pd.DataFrame.from_dict(test_results)
 
         if self.collect_failures_only:
-            if "test_passed" in list(df_results.columns):
-                df_results = df_results[df_results["test_passed"] == False]
+            if "aggregation_passed" in list(df_results.columns):
+                df_results = df_results[df_results["aggregation_passed"] == False]
 
-        df_results["test_result"] = df_results["test_result"].astype(float)
-        df_results["test_batch_id"] = str(uuid.uuid1())
-        df_results["test_batch_timestamp"] = datetime.datetime.now()
+        df_results["aggregation_result"] = df_results["aggregation_result"].astype(float)
+        df_results["_batch_id"] = str(uuid.uuid1())
+        df_results["_batch_timestamp"] = datetime.datetime.now()
 
-        df_results["test_result_id"] = df_results.apply(
+        df_results["_result_id"] = df_results.apply(
             lambda x: str(uuid.uuid1()), axis=1
         )
 
@@ -55,7 +55,7 @@ class JsonCollector(Collector):
         super().__init__(collector_config)
 
         self._output_location = collector_config["output"]
-        self._output_file = "test_results.json"
+        self._output_file = "results.json"
 
     def save_test_results(self, project_name, test_results):
 
@@ -78,7 +78,7 @@ class CsvCollector(Collector):
         super().__init__(collector_config)
 
         self._output_location = collector_config["output"]
-        self._output_file = "test_results.csv"
+        self._output_file = "results.csv"
 
     def save_test_results(self, project_name, test_results):
 

@@ -112,6 +112,7 @@ def main(
 
         elif action == "agg":
             metric_results = project.aggregate_database_schema()
+            collector.save_test_results(project_name, metric_results)
 
 
 if __name__ == "__main__":
