@@ -16,7 +16,7 @@
             "name": "SchemaQL - Test",
             "type": "python",
             "request": "launch",
-            "program": "${file}",
+            "program": "${workspaceRoot}/schemaql/main.py",
             "args": ["test", "-p", "jaffle-shop-sf"],
             "console": "integratedTerminal"
         },
