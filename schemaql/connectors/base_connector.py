@@ -138,8 +138,10 @@ class Connector(object):
             except exc.DBAPIError as ex:
                 # an exception is raised, Connection is invalidated.
                 logger.error(f"Connection Error {ex}")
+                raise ex
     
     def execute_return_one(self, sql):
+
         rs = self.execute(sql)
-        result = rs.fetchone()
+        result = rs.fetchone() if rs else None
         return result
