@@ -5,11 +5,13 @@
 {%- endif -%}
 {%- if kwargs and "except" in kwargs %}
 {%- set except_columns = kwargs["except"] -%}
-{%- set columns = columns | difference(except_columns) -%}
+{%- set sel_columns = columns | difference(except_columns) -%}
+{%- else -%}
+{%- set sel_columns = columns -%}
 {%- endif -%}
 with hashed_rows as (
     select 
-        {{ hash(columns) }} as row_hash
+        {{ hash(sel_columns) }} as row_hash
      from {{ schema }}.{{ entity }}
 )
 select (count(*) - count(distinct row_hash)) as test_result
