@@ -1,1 +1,1 @@
-recursive-include schemaql/include *.py *.sql *.yml *.html *.md
+recursive-include schemaql/include *
