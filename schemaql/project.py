@@ -2,7 +2,7 @@ from pathlib import Path
 
 from schemaql.helpers.fileio import read_yaml
 from schemaql.helpers.logger import logger
-from schemaql.generator import TableSchemaGenerator
+from schemaql.generator import EntitySchemaGenerator
 from schemaql.tester import TestAggregator
 from schemaql.metrics import MetricsAggregator
 
@@ -43,8 +43,8 @@ class Project(object):
                 tables = [table.replace(f"{schema}.", "") for table in tables]
 
                 for table in tables:
-                    generator = TableSchemaGenerator(self._project_name, self._connector, database, schema, table)
-                    generator.generate_table_schema()
+                    generator = EntitySchemaGenerator(self._project_name, self._connector, database, schema, table)
+                    generator.generate_entity_schema()
 
     def _process_database_schema(self, aggregation_type):
 
