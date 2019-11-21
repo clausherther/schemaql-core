@@ -1,12 +1,9 @@
-from sqlalchemy import create_engine, exc
-from sqlalchemy.inspection import inspect
-
 from schemaql.helpers.logger import logger
 
 
-class Connector(object):
+class MockConnector(object):
     """
-    Database Connector
+    Mock Database Connector
     """
 
     def __init__(self, connection_info):
@@ -22,7 +19,6 @@ class Connector(object):
 
         self._connect_url = None
         self._engine = None
-        self._inspector = None
 
     @property
     def connector_type(self):
@@ -34,12 +30,6 @@ class Connector(object):
             self._engine = self._make_engine()
             logger.info(self._engine)
         return self._engine
-
-    @property
-    def inspector(self):
-        if self._inspector is None:
-            self._inspector = inspect(self.engine)
-        return self._inspector
 
     @property
     def user(self):
@@ -94,50 +84,32 @@ class Connector(object):
 
     def _make_engine(self):
 
-        return create_engine(self.connect_url)
+        return None
 
     def connect(self):
 
-        return self.engine.connect()
+        raise NotImplementedError("connect not implemented!")
 
     def get_schema_names(self, database):
 
-        schema_names = sorted(self.inspector.get_schema_names())
-
-        return schema_names
+        return []
 
     def get_table_names(self, schema):
 
-        table_names = sorted(self.inspector.get_table_names(schema))
-
-        return table_names
+        return []
 
     def get_columns(self, table, schema):
 
-        columns = self.inspector.get_columns(table, schema)
-
-        return columns
+        return []
 
     def get_column_names(self, table, schema):
 
-        columns = self.inspector.get_columns(table, schema)
-
-        return [c["name"] for c in columns]
+        return []
 
     def execute(self, sql):
 
-        with self.engine.connect() as cur:
-
-            try:
-                rs = cur.execute(sql)
-                return rs
-            except exc.DBAPIError as ex:
-                # an exception is raised, Connection is invalidated.
-                logger.error(f"Connection Error {ex}")
-                raise ex
+        raise NotImplementedError("execute not implemented!")
 
     def execute_return_one(self, sql):
 
-        rs = self.execute(sql)
-        result = rs.fetchone() if rs else None
-        return result
+        raise NotImplementedError("execute_return_one not implemented!")
