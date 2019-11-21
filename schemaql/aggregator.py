@@ -45,7 +45,6 @@ class Aggregator(object):
                 "kwargs": kwargs
             }
         )
-
         return sql
 
     def _get_aggregation_results(self, aggregation_name, column_name, kwargs=None):

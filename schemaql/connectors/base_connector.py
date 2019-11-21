@@ -1,4 +1,3 @@
-import sqlalchemy
 from sqlalchemy import create_engine, exc
 from sqlalchemy.inspection import inspect
 
@@ -24,7 +23,6 @@ class Connector(object):
         self._connect_url = None
         self._engine = None
         self._inspector = None
-
 
     @property
     def connector_type(self):
@@ -80,12 +78,10 @@ class Connector(object):
         self._connect_url = self._make_url()
         return self._connect_url
 
-
     @property
     def supports_multi_insert(self):
         return self._supports_multi_insert
-        
-    
+
     def _make_url(self):
 
         url = f"{self._url}"
@@ -139,7 +135,7 @@ class Connector(object):
                 # an exception is raised, Connection is invalidated.
                 logger.error(f"Connection Error {ex}")
                 raise ex
-    
+
     def execute_return_one(self, sql):
 
         rs = self.execute(sql)

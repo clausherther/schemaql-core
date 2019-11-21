@@ -51,9 +51,9 @@ class PrependingLoader(BaseLoader):
 
 class JinjaConfig(object):
 
-    def __init__(self, template_type, _connector):
+    def __init__(self, template_type, connector):
         self._template_type = template_type
-        self._connector = _connector
+        self._connector = connector
         self._environment = self._get_jinja_template_environment()
 
     @property
@@ -169,7 +169,8 @@ class JinjaConfig(object):
 
     def render_template(self, template, kwargs):
         try:
-            return template.render(**kwargs).strip()
+            template_contents = template.render(**kwargs).strip()
+            return template_contents
 
         except (jinja2.exceptions.TemplateSyntaxError,
                 jinja2.exceptions.UndefinedError) as e:

@@ -1,7 +1,3 @@
-import sqlalchemy
-from snowflake.sqlalchemy import URL
-from sqlalchemy import create_engine
-
 from schemaql.connectors.base_connector import Connector
 
 
@@ -47,7 +43,6 @@ class SnowflakeConnector(Connector):
     def role(self, val):
         self._role = val
 
-
     def _make_url(self):
 
         url = f"snowflake://{self._user}:{self._password}@{self._account}"
@@ -58,7 +53,7 @@ class SnowflakeConnector(Connector):
 
         if self._conn_params:
             url += f"?"
-            for k,v in self._conn_params.items():
+            for k, v in self._conn_params.items():
                 url += f"{k}={v}&"
 
         return url

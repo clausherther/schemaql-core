@@ -1,7 +1,7 @@
 with validation_errors as (
     select
         *
-    from 
+    from
         {{ schema }}.{{ entity }}
     where
         {{ column }} is null
