@@ -37,7 +37,7 @@ setup(
         'PyYAML>=5.1',
         'snowflake-connector-python==2.0.3',
         'snowflake-sqlalchemy>=1.1.14',
-        'SQLAlchemy>=1.3.7',
+        'SQLAlchemy>=1.3.11',
         'sqlalchemy-redshift>=0.7.5',
     ],
     zip_safe=False,
