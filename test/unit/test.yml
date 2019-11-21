@@ -1,0 +1,7 @@
+projects:
+  project-1:
+    connection: project-1-snowflake
+    schema:
+      database_1:
+      - schema_1
+      - schema_2

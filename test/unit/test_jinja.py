@@ -1,19 +1,12 @@
-import re
 from mock_connector import MockConnector
 from schemaql.jinja import JinjaConfig
 from schemaql.helpers.logger import logger
+from helpers import strings_match_ignore_whitespace
 
 test_schema = "test_schema"
 test_entity = "test_entity"
 test_column = "test_column"
 test_kwargs = {"schema": test_schema, "entity": test_entity, "column": test_column}
-
-
-def strings_match_ignore_whitespace(a, b):
-    """
-    Compare two base strings, disregarding whitespace
-    """
-    return re.sub("\\s*", "", a) == re.sub("\\s*", "", b)
 
 
 class TestJinja(object):

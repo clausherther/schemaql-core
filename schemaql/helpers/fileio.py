@@ -19,4 +19,6 @@ def read_yaml(yaml_path, storage_model='local'):
 
 
 def check_directory_exists(directory):
-    Path(directory).mkdir(parents=True, exist_ok=True)
+    p = Path(directory)
+    p.mkdir(parents=True, exist_ok=True)
+    return p
