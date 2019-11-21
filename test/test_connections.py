@@ -1,7 +1,8 @@
-import pytest
+# import pytest
 from schemaql.helpers.fileio import read_yaml
 from schemaql.connectors.snowflake import SnowflakeConnector
 from schemaql.connectors.bigquery import BigQueryConnector
+
 
 class TestConnections(object):
 
@@ -19,7 +20,7 @@ class TestConnections(object):
 
         connector = supported_connectors[connection_type](connection_info)
 
-        return connector 
+        return connector
 
     def test_bigquery_connection(self):
 
@@ -29,12 +30,10 @@ class TestConnections(object):
 
         assert cur is not None
 
-
     def test_snowflake_connection(self):
 
         conn = self._get_connection("calogica-bq")
         assert conn is not None
         cur = conn.engine.connect()
 
-        assert cur is not None    
-
+        assert cur is not None
