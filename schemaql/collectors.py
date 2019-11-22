@@ -115,7 +115,7 @@ class DbCollector(Collector):
             logger.info("Using single-row inserts")
 
         with self._connector.connect() as con:
-
+            logger.info(f"Saving results to {self._connector.connector_type}")
             df_results.to_sql(
                 name=self._output,
                 con=con,

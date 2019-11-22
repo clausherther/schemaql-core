@@ -32,7 +32,7 @@ class Connector(object):
     def engine(self):
         if self._engine is None:
             self._engine = self._make_engine()
-            logger.info(self._engine)
+            logger.info(f"Connecting to {self.connector_type}...")
         return self._engine
 
     @property
@@ -97,7 +97,6 @@ class Connector(object):
         return create_engine(self.connect_url)
 
     def connect(self):
-
         return self.engine.connect()
 
     def get_schema_names(self, database):

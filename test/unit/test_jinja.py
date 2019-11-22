@@ -95,7 +95,7 @@ class TestJinja(object):
         template_name = "unique_rows.sql"
         expected_contents = f"""
         with hashed_rows as (
-            select 
+            select
                 md5(concat(
             coalesce(cast({test_column}_1 as varchar), ''),'|',coalesce(cast({test_column}_2 as varchar), ''))) as row_hash
             from {test_schema}.{test_entity}

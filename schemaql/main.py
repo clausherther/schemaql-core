@@ -1,10 +1,11 @@
+import sys
 import plac
 
 from schemaql.collectors import CsvCollector, DbCollector, JsonCollector
 from schemaql.connectors.bigquery import BigQueryConnector
 from schemaql.connectors.snowflake import SnowflakeConnector
 from schemaql.helpers.fileio import read_yaml, schemaql_path
-from schemaql.helpers.logger import logger
+from schemaql.helpers.logger import logger, color_me, LINE_WIDTH
 from schemaql.project import Project
 
 
@@ -62,6 +63,27 @@ def _get_project_config(projects_config, project_name, connections):
     return connector, databases
 
 
+def _check_for_failures(results):
+    results_count = len(results)
+    failures = sum([not a["aggregation_passed"] for a in results])
+    failed_tasks = [a for a in results if not a["aggregation_passed"]]
+    logger.info((LINE_WIDTH - 18) * "-")
+
+    if failures == 0:
+        color = "green"
+        logger.info(color_me(f"{results_count} task(s) ran successfully.", color))
+    else:
+        color = "red"
+        logger.info(color_me(f"{failures} failure(s) out of {results_count} task(s).", color))
+        for task in failed_tasks:
+            task_desc = f'- {task["aggregation_name"]}'
+            logger.info(task_desc)
+
+    logger.info((LINE_WIDTH - 18) * "-")
+
+    return failures
+
+
 @plac.annotations(
     action=("Action ('test', 'agg' or 'generate')"),
     project=("Project", "option", "p"),
@@ -91,6 +113,8 @@ def main(
     if project is not None:
         projects_config = {project: projects_config[project]}
 
+    failures = 0
+
     for project_name in projects_config:
 
         connector, databases = _get_project_config(
@@ -106,11 +130,20 @@ def main(
         elif action == "test":
 
             test_results = project.test_database_schema()
+            test_failures = _check_for_failures(test_results)
+            failures += test_failures
             collector.save_test_results(project_name, test_results)
 
         elif action == "agg":
             metric_results = project.aggregate_database_schema()
+            metric_failures = _check_for_failures(metric_results)
+            failures += metric_failures
             collector.save_test_results(project_name, metric_results)
+
+    logger.info("Done!")
+
+    exit_code = 0 + failures
+    sys.exit(exit_code)
 
 
 if __name__ == "__main__":

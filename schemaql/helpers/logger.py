@@ -2,14 +2,34 @@ import logging
 from logging.handlers import TimedRotatingFileHandler
 from pathlib import Path
 from colorama import init
+from colorama import Fore, Style
+
 
 init(autoreset=True)
 
 DEFAULT_LOG_PATH = Path("logs")
 
+LINE_WIDTH = 100
+CHECK_MARK = "\N{check mark}"
+X = "x"
+
 
 def check_directory_exists(directory):
     Path(directory).mkdir(parents=True, exist_ok=True)
+
+
+def color_me(msg, color):
+
+    colors = {
+        "red": Fore.RED,
+        "green": Fore.GREEN,
+        "white": Fore.WHITE,
+        "black": Fore.BLACK,
+        "blue": Fore.BLUE,
+        "yellow": Fore.YELLOW
+    }
+    assert color in colors, f"'{color}' is not supported"
+    return colors[color] + msg + Style.RESET_ALL
 
 
 def make_logger():
