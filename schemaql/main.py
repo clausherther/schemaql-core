@@ -97,7 +97,12 @@ def main(
     connections_file="connections.yml",
 ):
 
-    logger.info(f"schemaql_path: {schemaql_path}")
+    # logger.info(f"schemaql_path: {schemaql_path}")
+
+    actions = ["generate", "test", "agg"]
+    assert (
+        action in actions
+    ), f"'{action}' is currently not supported"
 
     config = read_yaml(config_file)
     connections = read_yaml(connections_file)
@@ -114,6 +119,7 @@ def main(
         projects_config = {project: projects_config[project]}
 
     failures = 0
+    results = None
 
     for project_name in projects_config:
 
@@ -124,21 +130,17 @@ def main(
         project = Project(project_name, connector, databases)
 
         if action == "generate":
-
             project.generate_database_schema()
 
         elif action == "test":
-
-            test_results = project.test_database_schema()
-            test_failures = _check_for_failures(test_results)
-            failures += test_failures
-            collector.save_test_results(project_name, test_results)
+            results = project.test_database_schema()
 
         elif action == "agg":
-            metric_results = project.aggregate_database_schema()
-            metric_failures = _check_for_failures(metric_results)
-            failures += metric_failures
-            collector.save_test_results(project_name, metric_results)
+            results = project.aggregate_database_schema()
+
+        if results:
+            failures += _check_for_failures(results)
+            collector.save_test_results(project_name, results)
 
     logger.info("Done!")
 
