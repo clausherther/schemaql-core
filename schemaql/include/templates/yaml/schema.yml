@@ -5,7 +5,7 @@ models:
       columns:
     {%- for column in columns %}
         - name: {{ column["name"] }}
-          description: 
+          description: {{ column["name"] }}
           tests:
             - not_null
     {%- endfor -%}
