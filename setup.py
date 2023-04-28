@@ -35,7 +35,7 @@ setup(
         'psycopg2>=2.7.5,<2.8',
         'pybigquery>=0.4.11',
         'PyYAML>=5.1',
-        'snowflake-connector-python==2.0.3',
+        'snowflake-connector-python==2.8.3',
         'snowflake-sqlalchemy>=1.1.14',
         'SQLAlchemy>=1.3.11',
         'sqlalchemy-redshift>=0.7.5',
